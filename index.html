@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#063f3a">
+<meta name="color-scheme" content="light">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Brick Business Manager</title>
+<script src="./config.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{--bg:#f4f7f8;--card:#fff;--text:#17212b;--muted:#6b7785;--primary:#0f766e;--primary2:#14b8a6;--danger:#dc2626;--warning:#d97706;--border:#e4e9ee;--shadow:0 8px 28px rgba(20,40,60,.08)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+.app{max-width:1200px;margin:auto;min-height:100vh;padding-bottom:78px}
+.top{background:linear-gradient(135deg,#115e59,#0f766e 55%,#14b8a6);color:#fff;padding:22px 18px 26px;border-radius:0 0 26px 26px;box-shadow:0 10px 30px rgba(15,118,110,.2)}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-size:22px;font-weight:800}.sub{opacity:.82;font-size:12px;margin-top:3px}
+.iconbtn{border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:12px;width:42px;height:42px;font-size:17px}
+.container{padding:18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:-34px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}
+.stat{padding:17px;min-height:125px}.stat .label{font-size:12px;color:var(--muted)}.stat .value{font-size:25px;font-weight:800;margin:8px 0 5px}.stat .small{font-size:11px;color:var(--muted)}
+.section{margin-top:18px}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.section h2{font-size:17px;margin:0}.muted{color:var(--muted);font-size:12px}
+.locations{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.loc{padding:16px;position:relative}
+.loc h3{font-size:14px;margin:0 0 8px;word-break:break-word;padding-right:28px}
+.loc .qty{font-size:23px;font-weight:800}
+.locdel{position:absolute;top:10px;right:10px;width:26px;height:26px;border:0;border-radius:50%;background:#fee2e2;color:#b91c1c;font-size:12px;font-weight:800;line-height:1;display:flex;align-items:center;justify-content:center;opacity:.85;transition:transform .15s,background .15s,opacity .15s;padding:0}
+.locdel:hover{opacity:1;background:#fecaca;transform:scale(1.08)}
+.locdel:active{transform:scale(.95)}
+.pill{display:inline-block;padding:5px 9px;border-radius:99px;background:#e6fffb;color:#0f766e;font-size:11px;margin-top:8px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.action{border:0;padding:17px;border-radius:17px;color:#fff;font-weight:800;box-shadow:var(--shadow)}.buy{background:linear-gradient(135deg,#0f766e,#14b8a6)}.sell{background:linear-gradient(135deg,#1d4ed8,#3b82f6)}
+.panel{padding:16px}.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.field input,.field select{width:100%;padding:12px;border:1px solid var(--border);border-radius:11px;background:#fff;outline:none}.field input:focus,.field select:focus{border-color:var(--primary)}
+.full{grid-column:1/-1}.btn{border:0;border-radius:11px;padding:12px 15px;font-weight:700}.primary{background:var(--primary);color:#fff}.ghost{background:#eef5f5;color:#0f766e}.danger{background:#fee2e2;color:#991b1b}
+.tablewrap{overflow:auto;-webkit-overflow-scrolling:touch}.table{width:100%;border-collapse:collapse;min-width:720px}.table th,.table td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--border);font-size:12px}.table th{color:var(--muted);font-weight:700}.positive{color:#0f766e;font-weight:700}.negative{color:#dc2626;font-weight:700}
+.searchbar{display:flex;gap:8px;margin-bottom:10px}.searchbar input{flex:1;padding:11px 13px;border:1px solid var(--border);border-radius:11px}
+.hidden{display:none!important}.empty{text-align:center;padding:30px;color:var(--muted);font-size:13px}.summaryclick{border:1px solid var(--border);text-align:left;cursor:pointer;width:100%;color:inherit;transition:.15s}.summaryclick:hover{transform:translateY(-1px);box-shadow:var(--shadow)}.summaryclick:active{transform:translateY(0)}.txsummary{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}.summarybox{padding:16px}.summarytitle{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.summarytitle h3{margin:0;font-size:15px}.summarytag{font-size:10px;padding:5px 8px;border-radius:99px;background:#eef5f5;color:#0f766e;font-weight:700}.summarygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.summaryitem{padding:11px;background:#f7fafb;border-radius:11px}.summaryitem span{display:block;font-size:11px;color:var(--muted)}.summaryitem strong{display:block;font-size:17px;margin-top:4px}
+
+/* ---------- Business summary ---------- */
+.bizsummary{padding:0;overflow:hidden}
+.bizhead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px;background:linear-gradient(135deg,#ecfdf5,#e6fffb 45%,#eff6ff);border-bottom:1px solid var(--border)}
+.biztitle{font-size:15px;font-weight:800;letter-spacing:.2px}
+.bizhead .muted{margin-top:2px}
+.bizpill{margin-top:0;flex:0 0 auto;font-weight:800;letter-spacing:.2px;background:#0f766e;color:#fff}
+.bizpill.neg{background:#dc2626;color:#fff}
+.bizgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:14px 16px 4px}
+.bizitem{display:flex;align-items:center;gap:11px;padding:13px;border-radius:14px;background:#f8fafc;border:1px solid var(--border);transition:transform .15s,box-shadow .15s}
+.bizitem:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(20,40,60,.07)}
+.bizicon{width:40px;height:40px;flex:0 0 40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1}
+.bizitem.sales .bizicon{background:#d1fae5}
+.bizitem.cost .bizicon{background:#fef3c7}
+.bizitem.avg .bizicon{background:#e0e7ff}
+.bizitem .bizlabel{display:block;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.bizitem strong{display:block;font-size:19px;margin-top:3px;font-weight:800;word-break:break-word}
+.bizitem.sales strong{color:#0f766e}
+.bizitem.cost strong{color:#b45309}
+.bizitem.avg strong{color:#4338ca}
+.bizbarwrap{padding:14px 16px 18px}
+.bizbarrow{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--muted);margin-bottom:7px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+.bizbarrow span:last-child{text-transform:none;letter-spacing:0;font-weight:600}
+.biztrack{height:10px;border-radius:99px;background:#e2e8f0;overflow:hidden;display:flex}
+.bizfill-profit{height:100%;width:0;background:linear-gradient(90deg,#0f766e,#14b8a6);transition:width .4s ease}
+.bizfill-cogs{height:100%;width:0;background:linear-gradient(90deg,#94a3b8,#cbd5e1);transition:width .4s ease}
+
+.bottom{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(1200px,100%);background:rgba(255,255,255,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px max(8px,env(safe-area-inset-bottom));z-index:10}
+.nav{border:0;background:transparent;color:var(--muted);padding:7px 3px;font-size:11px}.nav b{display:block;font-size:20px;line-height:21px;margin-bottom:3px;font-weight:400}.nav.active{color:var(--primary);font-weight:800}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20;overflow:auto}
+.modalbox{width:min(620px,100%);background:#fff;border-radius:24px 24px 0 0;padding:20px;max-height:92vh;overflow:auto;-webkit-overflow-scrolling:touch}
+.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;gap:10px}.modalhead h2{margin:0;font-size:18px}.close{border:0;background:#eef2f4;border-radius:10px;width:36px;height:36px;flex:0 0 auto}
+.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(20px);background:#17212b;color:#fff;padding:11px 16px;border-radius:12px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:30;max-width:88vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.kpirow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mini{padding:15px}.mini strong{display:block;font-size:19px;margin-top:5px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.locations{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.bizgrid{grid-template-columns:1fr}.bizitem strong{font-size:18px}}
+@media(max-width:520px){.container{padding:14px}.top{padding:18px 15px 23px}.grid{gap:10px}.stat{min-height:112px;padding:14px}.stat .value{font-size:21px}.locations{gap:9px}.actions{gap:9px}.formgrid{grid-template-columns:1fr}.kpirow{grid-template-columns:1fr 1fr 1fr}.bottom{padding-top:7px}.txsummary{grid-template-columns:1fr}.summaryitem strong{font-size:15px}}
+
+/* ===== ATTRACTIVE UI REFRESH ===== */
+:root{
+  --bg:#f5f7fb;--card:#ffffff;--text:#172033;--muted:#718096;
+  --primary:#0f766e;--primary2:#20c4ad;--blue:#2563eb;--blue2:#60a5fa;
+  --danger:#dc2626;--warning:#d97706;--border:#e6ebf2;
+  --shadow:0 12px 35px rgba(15,23,42,.07);--shadow-lg:0 20px 55px rgba(15,23,42,.12)
+}
+body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 28%),radial-gradient(circle at 100% 8%,rgba(37,99,235,.07),transparent 25%),var(--bg);color:var(--text)}
+.app{max-width:1280px}
+.top{position:relative;overflow:hidden;background:linear-gradient(135deg,#063f3a 0%,#0f766e 48%,#14b8a6 100%);padding:24px 20px 38px;border-radius:0 0 32px 32px;box-shadow:0 18px 45px rgba(15,118,110,.22)}
+.top:before,.top:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.09);pointer-events:none}
+.top:before{width:210px;height:210px;right:-70px;top:-105px}.top:after{width:130px;height:130px;left:34%;bottom:-90px}
+.topline{position:relative;z-index:1}
+.brand{font-size:24px;letter-spacing:-.4px}.sub{font-size:12px;opacity:.8}
+.iconbtn{width:44px;height:44px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.14);backdrop-filter:blur(10px);transition:.2s}
+.iconbtn:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
+.container{padding:20px}
+.grid{gap:15px;margin-top:-30px;position:relative;z-index:2}
+.card{border:1px solid rgba(226,232,240,.9);border-radius:20px;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s,border-color .2s}
+.card:hover{box-shadow:0 16px 42px rgba(15,23,42,.09)}
+.stat{position:relative;overflow:hidden;padding:18px;min-height:132px;background:rgba(255,255,255,.96)}
+.stat:before{content:"";position:absolute;right:-25px;top:-25px;width:85px;height:85px;border-radius:50%;background:linear-gradient(135deg,rgba(20,184,166,.14),rgba(37,99,235,.04))}
+.stat:after{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:linear-gradient(180deg,var(--primary),var(--primary2));border-radius:20px 0 0 20px}
+.stat:nth-child(2):after{background:linear-gradient(180deg,#2563eb,#60a5fa)}
+.stat:nth-child(3):after{background:linear-gradient(180deg,#7c3aed,#a78bfa)}
+.stat:nth-child(4):after{background:linear-gradient(180deg,#059669,#34d399)}
+.stat:nth-child(5):after{background:linear-gradient(180deg,#d97706,#fbbf24)}
+.stat:nth-child(6):after{background:linear-gradient(180deg,#db2777,#f472b6)}
+.stat .label{font-size:11px;font-weight:800;letter-spacing:.8px;color:#7b8798}.stat .value{font-size:27px;letter-spacing:-.5px;margin:9px 0 4px}.stat .small{font-size:11px}
+.section{margin-top:22px}.sectionhead{margin-bottom:11px}.section h2{font-size:18px;letter-spacing:-.2px}.muted{font-size:12px;color:#7b8798}
+.actions{gap:14px}.action{position:relative;overflow:hidden;padding:19px;border-radius:18px;font-size:14px;box-shadow:0 12px 28px rgba(15,118,110,.14);transition:.2s}.action:after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;right:-25px;top:-35px;background:rgba(255,255,255,.13)}.action:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(15,23,42,.14)}.action:active{transform:scale(.99)}
+.buy{background:linear-gradient(135deg,#0b665f,#16a995)}.sell{background:linear-gradient(135deg,#1d4ed8,#3b82f6)}
+.locations{gap:14px}.loc{padding:18px;background:linear-gradient(180deg,#fff,#fbfdff);overflow:hidden}.loc:before{content:"🧱";position:absolute;right:13px;bottom:10px;font-size:35px;opacity:.06}.loc h3{font-size:14px}.loc .qty{font-size:26px;letter-spacing:-.4px}.locdel{z-index:2}
+.pill{padding:6px 10px;font-weight:700;background:#e8faf7}
+.panel{padding:18px;background:rgba(255,255,255,.96)}
+.btn{transition:.18s;box-shadow:0 2px 8px rgba(15,23,42,.04)}.btn:hover{transform:translateY(-1px)}.primary{background:linear-gradient(135deg,#0f766e,#14b8a6)}.ghost{background:#edf7f6;border:1px solid #d6ece9}.danger{border:1px solid #fecaca}
+.field input,.field select,.searchbar input{border:1px solid #dfe6ee;background:#fbfcfe;transition:.18s}.field input:focus,.field select:focus,.searchbar input:focus{border-color:#14b8a6;box-shadow:0 0 0 4px rgba(20,184,166,.11);background:#fff}
+.tablewrap{border-radius:14px}.table{min-width:760px}.table th{background:#f8fafc;position:sticky;top:0;z-index:1}.table th,.table td{padding:13px 10px}.table tbody tr{transition:.15s}.table tbody tr:hover{background:#f8fbfb}
+.txsummary{gap:15px}.summarybox{padding:18px;background:linear-gradient(145deg,#fff,#fbfefe)}.summarybox:first-child{border-top:4px solid #0f766e}.summarybox:last-child{border-top:4px solid #2563eb}.summarytag{font-weight:800}.summaryitem{background:#f6f9fb;border:1px solid #edf1f5}.summaryitem strong{font-size:18px}
+.bizsummary{box-shadow:0 16px 42px rgba(15,23,42,.08)}.bizhead{padding:18px;background:linear-gradient(135deg,#ecfdf5,#eff6ff)}.bizgrid{padding:15px 18px 5px}.bizitem{background:#fff}.bizbarwrap{padding:15px 18px 19px}
+.kpirow{gap:14px}.mini{border:1px solid #edf1f5;background:linear-gradient(180deg,#fff,#fafcff);border-radius:15px}.mini strong{font-size:20px}
+.bottom{border-top:1px solid rgba(226,232,240,.9);box-shadow:0 -10px 30px rgba(15,23,42,.06)}.nav{border-radius:13px;transition:.18s}.nav.active{background:#e8faf7}.nav b{font-size:21px}
+.modal{background:rgba(15,23,42,.55);backdrop-filter:blur(4px)}.modalbox{border:1px solid rgba(255,255,255,.65);box-shadow:var(--shadow-lg)}
+.toast{box-shadow:0 12px 30px rgba(15,23,42,.2)}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.top{padding:19px 15px 28px}.container{padding:14px}.grid{margin-top:-22px}.stat{min-height:118px}.stat .value{font-size:22px}.section h2{font-size:16px}.panel{padding:14px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+/* ---------- Inventory refresh ---------- */
+.inventoryHero{position:relative;overflow:hidden;padding:22px 24px;margin-bottom:14px;background:linear-gradient(135deg,#ecfdf5 0%,#eff6ff 55%,#ffffff 100%);display:flex;align-items:center;justify-content:space-between;gap:18px}
+.inventoryHero:before{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-55px;top:-75px;background:rgba(20,184,166,.10)}
+.inventoryHero:after{content:"";position:absolute;width:100px;height:100px;border-radius:50%;right:85px;bottom:-65px;background:rgba(37,99,235,.06)}
+.inventoryEyebrow{font-size:10px;font-weight:900;letter-spacing:1.4px;color:#0f766e;margin-bottom:6px}
+.inventoryHero h2{margin:0;font-size:22px;letter-spacing:-.5px}
+.inventoryHero p{margin:6px 0 0;color:#64748b;font-size:12px}
+.inventoryHeroIcon{position:relative;z-index:1;width:62px;height:62px;flex:0 0 62px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:31px;background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.9);box-shadow:0 10px 25px rgba(15,118,110,.10)}
+.inventoryKpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.inventoryKpi{position:relative;overflow:hidden;padding:14px;display:flex;align-items:center;gap:11px;min-height:78px}
+.inventoryKpi:after{content:"";position:absolute;right:-18px;bottom:-22px;width:62px;height:62px;border-radius:50%;background:currentColor;opacity:.05}
+.inventoryKpiIcon{width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.inventoryKpi>div span{display:block;color:#7b8798;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px}
+.inventoryKpi strong{display:block;margin-top:3px;font-size:18px;letter-spacing:-.3px}
+.purchaseKpi{color:#0f766e}.purchaseKpi .inventoryKpiIcon{background:#d1fae5}
+.soldKpi{color:#2563eb}.soldKpi .inventoryKpiIcon{background:#dbeafe}
+.remainKpi{color:#7c3aed}.remainKpi .inventoryKpiIcon{background:#ede9fe}
+.valueKpi{color:#b45309}.valueKpi .inventoryKpiIcon{background:#fef3c7}
+.inventoryHead{align-items:center;margin-top:4px}
+.inventoryActions{display:flex;gap:7px}
+.inventoryPanel{padding:14px;overflow:hidden}
+.inventoryToolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.inventorySearch{display:flex;align-items:center;gap:8px;flex:1;max-width:430px;padding:0 12px;border:1px solid #dfe6ee;border-radius:13px;background:#fbfcfe;transition:.18s}
+.inventorySearch:focus-within{border-color:#14b8a6;box-shadow:0 0 0 4px rgba(20,184,166,.11);background:#fff}
+.inventorySearch span{font-size:21px;line-height:1;color:#94a3b8;transform:rotate(-15deg)}
+.inventorySearch input{width:100%;border:0!important;box-shadow:none!important;background:transparent!important;padding:11px 0!important;outline:0}
+.inventoryHint{font-size:10px;font-weight:800;color:#64748b;background:#f1f5f9;border:1px solid #e2e8f0;padding:7px 10px;border-radius:99px;white-space:nowrap}
+.inventoryTableWrap{border:1px solid #edf1f5;border-radius:15px;overflow:auto}
+.inventoryTable{min-width:780px;border-collapse:separate;border-spacing:0}
+.inventoryTable th{background:linear-gradient(180deg,#f8fafc,#f1f5f9);font-size:10px;text-transform:uppercase;letter-spacing:.55px;padding:13px 12px;border-bottom:1px solid #e2e8f0}
+.inventoryTable td{padding:13px 12px;background:#fff;border-bottom:1px solid #eef2f6;vertical-align:middle}
+.inventoryTable tbody tr:last-child td{border-bottom:0}
+.inventoryTable tbody tr:hover td{background:#f8fcfb}
+.inventoryTable td:first-child{font-weight:800;color:#17212b}
+.inventoryLocation{display:flex;align-items:center;gap:9px;min-width:180px}
+.inventoryLocationIcon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e6fffb,#eff6ff);font-size:15px}
+.inventoryLocationName{max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inventoryNumber{font-weight:700;color:#334155}
+.inventoryRemaining{min-width:120px}
+.inventoryRemainingTop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+.inventoryRemainingTop strong{font-size:13px}
+.inventoryPercent{font-size:9px;font-weight:800;color:#64748b}
+.inventoryProgress{height:6px;width:100%;background:#e2e8f0;border-radius:99px;overflow:hidden}
+.inventoryProgress span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#0f766e,#14b8a6);min-width:2px}
+.inventoryStockCost{font-weight:800;color:#0f766e}
+.inventoryAvg{color:#475569;font-weight:700}
+@media(max-width:850px){.inventoryKpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.inventoryHero{padding:18px}.inventoryHero h2{font-size:19px}.inventoryHeroIcon{width:52px;height:52px;flex-basis:52px;font-size:25px}.inventoryKpis{gap:9px}.inventoryKpi{padding:12px;min-height:72px}.inventoryKpi strong{font-size:16px}.inventoryHead{align-items:flex-start;gap:10px}.inventoryActions{flex-wrap:wrap;justify-content:flex-end}.inventoryToolbar{align-items:stretch;flex-direction:column}.inventorySearch{max-width:none;width:100%}.inventoryHint{align-self:flex-start}}
+
+
+/* Google account + cloud sync */
+.accountbar{display:flex;align-items:center;gap:8px;margin-top:14px;padding:9px 10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.10);border-radius:15px}
+.accountdot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;color:#0f766e;font-weight:800;flex:0 0 auto}
+.accountinfo{min-width:0;flex:1}.accountname{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.accountstatus{font-size:10px;opacity:.78;margin-top:2px}
+.accountbtn{border:0;background:#fff;color:#0f766e;border-radius:10px;padding:8px 11px;font-weight:800;font-size:11px;white-space:nowrap}
+.accountbtn.danger{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.22)}
+.syncbadge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:99px;background:rgba(255,255,255,.14);font-size:10px;white-space:nowrap}
+.syncbadge.ok{background:rgba(220,252,231,.18)}.syncbadge.busy{background:rgba(254,243,199,.18)}.syncbadge.err{background:rgba(254,226,226,.18)}
+.cloudnote{padding:12px;border-radius:13px;background:#f0fdfa;border:1px solid #ccfbf1;color:#115e59;font-size:12px;line-height:1.5}
+.cloudnote strong{display:block;margin-bottom:3px}
+.setupbox{padding:12px;border-radius:13px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px;line-height:1.5}
+@media(max-width:560px){.accountbar{align-items:flex-start}.accountbtn{padding:7px 9px}.syncbadge{font-size:9px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="topline">
+    <div><div class="brand">🧱 Brick Manager</div><div class="sub">Inventory • Purchase • Sales • Profit</div></div>
+    <button class="iconbtn" type="button" data-action="open-backup" aria-label="Data and backup">⚙️</button>
+  </div>
+  <div class="accountbar">
+    <div class="accountdot" id="accountAvatar">G</div>
+    <div class="accountinfo"><div class="accountname" id="accountName">Not signed in</div><div class="accountstatus" id="accountStatus">Sign in to sync across devices</div></div>
+    <span class="syncbadge" id="syncBadge">☁️ Offline</span>
+    <button class="accountbtn" id="accountBtn" type="button" data-action="google-signin">Sign in with Google</button>
+  </div>
+</header>
+
+<main class="container">
+  <section id="dashboard">
+    <div class="grid">
+      <div class="card stat"><div class="label">TOTAL BRICKS</div><div class="value" id="sTotal">0</div><div class="small">All purchased</div></div>
+      <div class="card stat"><div class="label">SOLD</div><div class="value" id="sSold">0</div><div class="small">Quantity sold</div></div>
+      <div class="card stat"><div class="label">REMAINING</div><div class="value" id="sRemain">0</div><div class="small">Available stock</div></div>
+      <div class="card stat"><div class="label">PROFIT</div><div class="value" id="sProfit">৳0</div><div class="small">Estimated gross profit</div></div>
+      <div class="card stat"><div class="label">PROFIT / 1000</div><div class="value" id="sProfitPer1000">৳0</div><div class="small">Average profit per 1,000 bricks</div></div>
+      <div class="card stat"><div class="label">PROFIT %</div><div class="value" id="sProfitPct">0%</div><div class="small">Profit ÷ average cost</div></div>
+    </div>
+
+    <div class="section">
+      <div class="sectionhead"><h2>Business summary</h2><span class="muted">All locations combined</span></div>
+      <div class="card bizsummary">
+        <div class="bizhead">
+          <div>
+            <div class="biztitle">💼 Overview</div>
+            <div class="muted">Totals from all purchases &amp; sales</div>
+          </div>
+          <span class="pill bizpill" id="sMargin">Margin 0%</span>
+        </div>
+        <div class="bizgrid">
+          <div class="bizitem sales">
+            <div class="bizicon">💰</div>
+            <div><span class="bizlabel">Sales</span><strong id="sSales">৳0</strong></div>
+          </div>
+          <div class="bizitem cost">
+            <div class="bizicon">🧾</div>
+            <div><span class="bizlabel">Purchase cost</span><strong id="sCost">৳0</strong></div>
+          </div>
+          <div class="bizitem avg">
+            <div class="bizicon">📊</div>
+            <div><span class="bizlabel">Avg cost / 1000</span><strong id="sAvg">৳0</strong></div>
+          </div>
+        </div>
+        <div class="bizbarwrap">
+          <div class="bizbarrow"><span>Revenue split</span><span id="bizSplitText">Profit ৳0 · Cost ৳0</span></div>
+          <div class="biztrack">
+            <div class="bizfill-profit" id="bizProfitFill"></div>
+            <div class="bizfill-cogs" id="bizCogsFill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sectionhead"><h2>Quick actions</h2><span class="muted">Tap to add</span></div>
+      <div class="actions">
+        <button class="action buy" type="button" data-action="new-purchase">＋ Add Purchase</button>
+        <button class="action sell" type="button" data-action="new-sale">＋ Add Sale</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sectionhead"><h2>Stock by location</h2><button class="btn ghost" type="button" data-action="open-locations">⚙️ Edit locations</button></div>
+      <div class="locations" id="locations"></div>
+    </div>
+
+  </section>
+
+  <section id="inventory" class="hidden">
+    <div class="inventoryHero card">
+      <div>
+        <div class="inventoryEyebrow">📦 INVENTORY CONTROL</div>
+        <h2>Stock overview</h2>
+        <p>Track bricks, stock value and location-wise availability at a glance.</p>
+      </div>
+      <div class="inventoryHeroIcon">🧱</div>
+    </div>
+
+    <div class="inventoryKpis">
+      <div class="card inventoryKpi purchaseKpi"><span class="inventoryKpiIcon">📥</span><div><span>Purchased</span><strong id="invTotalBuy">0</strong></div></div>
+      <div class="card inventoryKpi soldKpi"><span class="inventoryKpiIcon">📤</span><div><span>Sold</span><strong id="invTotalSold">0</strong></div></div>
+      <div class="card inventoryKpi remainKpi"><span class="inventoryKpiIcon">🧱</span><div><span>Remaining</span><strong id="invTotalRemain">0</strong></div></div>
+      <div class="card inventoryKpi valueKpi"><span class="inventoryKpiIcon">💰</span><div><span>Stock value</span><strong id="invStockValue">৳0</strong></div></div>
+    </div>
+
+    <div class="sectionhead inventoryHead"><div><h2>Location inventory</h2><span class="muted" id="invLocationCount">0 locations</span></div><div class="inventoryActions"><button class="btn ghost" type="button" data-action="open-locations">⚙️ Locations</button><button class="btn primary" type="button" data-action="new-purchase">＋ Purchase</button></div></div>
+
+    <div class="card panel inventoryPanel">
+      <div class="inventoryToolbar">
+        <div class="inventorySearch"><span>⌕</span><input id="invSearch" placeholder="Search by location..." autocomplete="off"></div>
+        <div class="inventoryHint">Live stock calculation</div>
+      </div>
+      <div class="tablewrap inventoryTableWrap"><table class="table inventoryTable"><thead><tr><th>Location</th><th>Purchased</th><th>Sold</th><th>Remaining</th><th>Avg Cost/1000</th><th>Stock Cost</th></tr></thead><tbody id="invBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="transactions" class="hidden">
+    <div class="sectionhead"><h2>Transactions</h2><button class="btn primary" type="button" data-action="new-sale">＋ Sale</button></div>
+    <div class="muted" style="margin:-3px 0 10px 2px">Use ✎ to edit a transaction or ✕ to delete it.</div>
+
+    <div class="txsummary">
+      <button class="card summarybox summaryclick" type="button" data-action="filter-tx" data-type="purchase">
+        <div class="summarytitle"><h3>Purchase Summary</h3><span class="summarytag">PURCHASE</span></div>
+        <div class="summarygrid">
+          <div class="summaryitem"><span>Transactions</span><strong id="txPurchaseCount">0</strong></div>
+          <div class="summaryitem"><span>Quantity</span><strong id="txPurchaseQty">0</strong></div>
+          <div class="summaryitem"><span>Total Cost</span><strong id="txPurchaseTotal">৳0</strong></div>
+        </div>
+      </button>
+
+      <button class="card summarybox summaryclick" type="button" data-action="filter-tx" data-type="sale">
+        <div class="summarytitle"><h3>Sell Summary</h3><span class="summarytag">SALE</span></div>
+        <div class="summarygrid">
+          <div class="summaryitem"><span>Transactions</span><strong id="txSaleCount">0</strong></div>
+          <div class="summaryitem"><span>Quantity</span><strong id="txSaleQty">0</strong></div>
+          <div class="summaryitem"><span>Total Sales</span><strong id="txSaleTotal">৳0</strong></div>
+        </div>
+      </button>
+    </div>
+
+    <div class="card panel">
+      <div class="searchbar"><input id="txSearch" placeholder="Search buyer/location/type..." autocomplete="off"></div>
+      <div class="tablewrap"><table class="table"><thead><tr><th>Date</th><th>Type</th><th>Location</th><th>Qty</th><th>Rate/1000</th><th>Total</th><th>Buyer</th><th>Status</th><th></th></tr></thead><tbody id="txBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="reports" class="hidden">
+    <div class="sectionhead"><h2>Profit report</h2><span class="muted">Calculated from transactions</span></div>
+    <div class="card panel">
+      <div class="kpirow">
+        <div class="mini"><span class="muted">Revenue</span><strong id="rRevenue">৳0</strong></div>
+        <div class="mini"><span class="muted">COGS</span><strong id="rCogs">৳0</strong></div>
+        <div class="mini"><span class="muted">Profit</span><strong id="rProfit">৳0</strong></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="sectionhead"><h2>Profit by Location</h2><span class="muted">Each location shown separately</span></div>
+      <div id="reportLocations"></div>
+    </div>
+  </section>
+</main>
+</div>
+
+<nav class="bottom">
+ <button class="nav active" type="button" data-action="page" data-page="dashboard"><b>⌂</b>Dashboard</button>
+ <button class="nav" type="button" data-action="page" data-page="inventory"><b>▦</b>Inventory</button>
+ <button class="nav" type="button" data-action="page" data-page="transactions"><b>↕️</b>Transactions</button>
+ <button class="nav" type="button" data-action="page" data-page="reports"><b>◔</b>Reports</button>
+</nav>
+
+<div id="modal" class="modal hidden">
+ <div class="modalbox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modalhead"><h2 id="modalTitle">Add transaction</h2><button class="close" type="button" data-action="close-modal" aria-label="Close">✕</button></div>
+  <form id="txForm" class="formgrid" novalidate>
+   <input type="hidden" id="txType">
+   <input type="hidden" id="editId">
+   <div class="field"><label for="fDate">Date</label><input id="fDate" type="date" required></div>
+   <div class="field"><label for="fLocation">Location</label><select id="fLocation"></select></div>
+   <div class="field"><label for="fQty">Quantity (bricks)</label><input id="fQty" type="number" inputmode="decimal" min="0.001" step="0.001" required></div>
+   <div class="field"><label for="fRate">Rate per 1000 (৳)</label><input id="fRate" type="number" inputmode="decimal" min="0" step="0.01" required></div>
+   <div class="field"><label id="extraLabel" for="fExtra">Extra cost (৳)</label><input id="fExtra" type="number" inputmode="decimal" min="0" step="0.01" value="0"></div>
+   <div class="field"><label id="buyerLabel" for="fBuyer">Buyer information</label><input id="fBuyer" placeholder="Name / phone / note" autocomplete="off"></div>
+   <div class="field" id="statusWrap"><label for="fStatus">Payment status</label><select id="fStatus"><option>Paid</option><option>Due</option><option>Partial</option></select></div>
+   <div class="field full"><button class="btn primary" type="submit" id="saveBtn">Save transaction</button></div>
+  </form>
+ </div>
+</div>
+
+<div id="locationModal" class="modal hidden">
+ <div class="modalbox" role="dialog" aria-modal="true" aria-labelledby="locTitle">
+  <div class="modalhead"><h2 id="locTitle">Edit Locations</h2><button class="close" type="button" data-action="close-locations" aria-label="Close">✕</button></div>
+  <p class="muted">Add, rename, or remove stock locations. Renaming also updates existing transactions. Deleting keeps old transactions in history.</p>
+  <div id="locationList" style="display:grid;gap:9px;margin:14px 0"></div>
+  <div style="display:flex;gap:8px">
+   <input id="newLocation" placeholder="New location name" autocomplete="off" style="flex:1;min-width:0;padding:12px;border:1px solid var(--border);border-radius:11px">
+   <button class="btn primary" type="button" data-action="add-location">＋ Add</button>
+  </div>
+ </div>
+</div>
+
+<div id="backupModal" class="modal hidden">
+ <div class="modalbox" role="dialog" aria-modal="true" aria-labelledby="bakTitle">
+  <div class="modalhead"><h2 id="bakTitle">Data &amp; Backup</h2><button class="close" type="button" data-action="close-backup" aria-label="Close">✕</button></div>
+  <div class="cloudnote"><strong>☁️ Google Drive sync</strong><span id="cloudBackupStatus">Sign in with Google to keep purchases, sales, locations, and reports synced across your devices.</span></div>
+  <div id="cloudSetupNote" class="setupbox" style="display:none;margin-top:10px">Google Drive is not configured yet. Add your Google OAuth Web Client ID in the HTML once, then open the app from an allowed web origin.</div>
+  <div style="display:grid;gap:10px;margin-top:10px">
+   <button class="btn primary" type="button" data-action="google-signin">☁️ Sign in &amp; sync Google Drive</button>
+   <button class="btn ghost" type="button" data-action="google-sync">🔄 Sync now</button>
+   <button class="btn ghost" type="button" data-action="export-json">⬇️ Backup JSON</button>
+   <label class="btn ghost" style="text-align:center;display:block;cursor:pointer">⬆️ Restore JSON<input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></label>
+   <button class="btn ghost" type="button" data-action="export-csv">⬇️ Export CSV</button>
+   <button class="btn danger" type="button" data-action="clear-all">Delete all app data</button>
+  </div>
+ </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ------------------------------------------------------------------
+     Small helpers
+  ------------------------------------------------------------------ */
+  function $(id) { return document.getElementById(id); }
+
+  function escapeHtml(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function money(n) {
+    var v = Number(n) || 0;
+    try {
+      return "৳" + v.toLocaleString("en-BD", { maximumFractionDigits: 2 });
+    } catch (e) {
+      return "৳" + v.toFixed(2);
+    }
+  }
+
+  function qty(n) {
+    var v = Number(n) || 0;
+    try {
+      return v.toLocaleString("en-BD", { maximumFractionDigits: 3 });
+    } catch (e) {
+      return String(v);
+    }
+  }
+
+  function num(n) {
+    var v = Number(n);
+    return isFinite(v) ? v : 0;
+  }
+
+  function todayISO() {
+    var d = new Date();
+    var off = d.getTimezoneOffset();
+    return new Date(d.getTime() - off * 60000).toISOString().slice(0, 10);
+  }
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  var toastTimer = null;
+  function toast(message) {
+    var t = $("toast");
+    if (!t) return;
+    t.textContent = message;
+    t.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 1800);
+  }
+
+  /* ------------------------------------------------------------------
+     Storage layer (safe when localStorage is blocked / unavailable)
+  ------------------------------------------------------------------ */
+  var storage = (function () {
+    var ok = true;
+    var mem = Object.create(null);
+    try {
+      var probe = "_bm_probe_";
+      window.localStorage.setItem(probe, "1");
+      window.localStorage.removeItem(probe);
+    } catch (e) {
+      ok = false;
+    }
+    return {
+      available: ok,
+      get: function (key) {
+        try {
+          if (ok) return window.localStorage.getItem(key);
+        } catch (e) { /* ignore */ }
+        return Object.prototype.hasOwnProperty.call(mem, key) ? mem[key] : null;
+      },
+      set: function (key, value) {
+        mem[key] = String(value);
+        try {
+          if (ok) window.localStorage.setItem(key, String(value));
+        } catch (e) { ok = false; }
+      },
+      remove: function (key) {
+        delete mem[key];
+        try {
+          if (ok) window.localStorage.removeItem(key);
+        } catch (e) { /* ignore */ }
+      }
+    };
+  })();
+
+  var KEY_DB = "brickManagerDB";
+  var KEY_LOC = "brickManagerLocations";
+
+  /* Google Drive cloud account. Replace this with your OAuth Web Client ID. */
+  var GOOGLE_CLIENT_ID = (window.BRICK_MANAGER_CONFIG && window.BRICK_MANAGER_CONFIG.googleClientId) || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+  var DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.appdata";
+  var DRIVE_FILE_NAME = "brick-manager-data.json";
+  var googleTokenClient = null;
+  var googleAccessToken = null;
+  var googleTokenExpiry = 0;
+  var googleUser = null;
+  var driveFileId = null;
+  var cloudReady = false;
+  var cloudSyncing = false;
+  var cloudSyncTimer = null;
+  var cloudLoaded = false;
+
+  var DEFAULT_LOCATIONS = [
+    "Chowrasta Mor",
+    "Mannan Kaka's Place",
+    "Sohag Kaka's Place",
+    "Bhatta"
+  ];
+
+  /* ------------------------------------------------------------------
+     State
+  ------------------------------------------------------------------ */
+  var LOCATIONS = DEFAULT_LOCATIONS.slice();
+  var db = { transactions: [] };
+  var currentPage = "dashboard";
+
+  function loadLocations() {
+    var parsed = null;
+    try {
+      var raw = storage.get(KEY_LOC);
+      if (raw) parsed = JSON.parse(raw);
+    } catch (e) { parsed = null; }
+    if (!Array.isArray(parsed) || !parsed.length) return DEFAULT_LOCATIONS.slice();
+    var cleaned = [];
+    for (var i = 0; i < parsed.length; i++) {
+      var name = String(parsed[i] == null ? "" : parsed[i]).trim();
+      if (name && cleaned.indexOf(name) === -1) cleaned.push(name);
+    }
+    return cleaned.length ? cleaned : DEFAULT_LOCATIONS.slice();
+  }
+
+  function saveLocations() {
+    if (googleUser && cloudReady) syncToDrive().catch(function () {});
+  }
+
+  function normalizeTx(t) {
+    var raw = t && typeof t === "object" ? t : {};
+    return {
+      id: raw.id ? String(raw.id) : uid(),
+      date: /^\d{4}-\d{2}-\d{2}$/.test(String(raw.date)) ? String(raw.date) : todayISO(),
+      type: raw.type === "sale" ? "sale" : "purchase",
+      location: String(raw.location == null ? "" : raw.location),
+      qty: num(raw.qty),
+      rate: num(raw.rate),
+      extra: num(raw.extra),
+      buyer: String(raw.buyer == null ? "" : raw.buyer),
+      status: raw.status ? String(raw.status) : "Paid"
+    };
+  }
+
+  function loadDB() {
+    var parsed = null;
+    try {
+      var raw = storage.get(KEY_DB);
+      if (raw) parsed = JSON.parse(raw);
+    } catch (e) { parsed = null; }
+    var list = parsed && Array.isArray(parsed.transactions) ? parsed.transactions : [];
+    var seen = Object.create(null);
+    var out = [];
+    for (var i = 0; i < list.length; i++) {
+      var tx = normalizeTx(list[i]);
+      if (seen[tx.id]) tx.id = uid() + i;
+      seen[tx.id] = true;
+      if (!tx.location) tx.location = LOCATIONS[0] || "";
+      out.push(tx);
+    }
+    return { transactions: out };
+  }
+
+  function save() {
+    /* Cloud is the source of truth. localStorage is only used once to migrate old data. */
+    renderAll();
+    if (googleUser && cloudReady) syncToDrive().catch(function () {});
+  }
+
+  /* ------------------------------------------------------------------
+     Google account + Drive cloud sync
+  ------------------------------------------------------------------ */
+  function configuredGoogle() {
+    return GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID.indexOf("YOUR_GOOGLE_CLIENT_ID") !== 0;
+  }
+
+  function setSyncUI(state, message) {
+    var badge = $("syncBadge"), status = $("accountStatus"), name = $("accountName"), btn = $("accountBtn"), avatar = $("accountAvatar"), note = $("cloudBackupStatus"), setup = $("cloudSetupNote");
+    if (setup) setup.style.display = configuredGoogle() ? "none" : "block";
+    if (googleUser) {
+      name.textContent = googleUser.name || googleUser.email || "Google account";
+      status.textContent = googleUser.email || "Google account connected";
+      avatar.textContent = (googleUser.name || googleUser.email || "G").charAt(0).toUpperCase();
+      btn.textContent = "Sign out";
+      btn.setAttribute("data-action", "google-signout");
+    } else {
+      name.textContent = "Not signed in";
+      status.textContent = configuredGoogle() ? "Sign in to sync across devices" : "Google Drive setup required";
+      avatar.textContent = "G";
+      btn.textContent = "Sign in with Google";
+      btn.setAttribute("data-action", "google-signin");
+    }
+    if (badge) {
+      badge.className = "syncbadge" + (state === "ok" ? " ok" : state === "busy" ? " busy" : state === "err" ? " err" : "");
+      badge.textContent = state === "ok" ? "☁️ Synced" : state === "busy" ? "⏳ Syncing" : state === "err" ? "⚠️ Sync error" : "☁️ Offline";
+    }
+    if (note) note.textContent = message || (googleUser ? "Your app data is stored in your Google Drive application data and can be loaded on another device when you sign in with the same Google account." : "Sign in with Google to keep purchases, sales, locations, and reports synced across your devices.");
+  }
+
+  function driveRequest(url, options) {
+    options = options || {};
+    options.headers = options.headers || {};
+    options.headers.Authorization = "Bearer " + googleAccessToken;
+    if (options.body && !options.headers["Content-Type"]) options.headers["Content-Type"] = "application/json";
+    return fetch(url, options).then(function (res) {
+      if (!res.ok) return res.text().then(function (txt) { throw new Error("Drive " + res.status + ": " + txt); });
+      return res;
+    });
+  }
+
+  function requestGoogleToken(interactive) {
+    return new Promise(function (resolve, reject) {
+      if (!configuredGoogle()) return reject(new Error("Google OAuth Client ID is not configured."));
+      if (!window.google || !google.accounts || !google.accounts.oauth2) return reject(new Error("Google Identity Services has not loaded yet."));
+      if (!googleTokenClient) {
+        googleTokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: "openid email profile " + DRIVE_SCOPE,
+          callback: function (response) {
+            if (response && response.access_token) {
+              googleAccessToken = response.access_token;
+              googleTokenExpiry = Date.now() + ((Number(response.expires_in) || 3600) * 1000) - 60000;
+              resolve(response);
+            } else reject(new Error("Google authorization was not completed."));
+          },
+          error_callback: function (err) { reject(new Error((err && err.type) || "Google authorization failed.")); }
+        });
+      } else {
+        googleTokenClient.callback = function (response) {
+          if (response && response.access_token) {
+            googleAccessToken = response.access_token;
+            googleTokenExpiry = Date.now() + ((Number(response.expires_in) || 3600) * 1000) - 60000;
+            resolve(response);
+          } else reject(new Error("Google authorization was not completed."));
+        };
+      }
+      googleTokenClient.requestAccessToken({ prompt: interactive ? "consent" : "" });
+    });
+  }
+
+  function ensureGoogleToken(interactive) {
+    if (googleAccessToken && Date.now() < googleTokenExpiry) return Promise.resolve();
+    return requestGoogleToken(!!interactive);
+  }
+
+  function getCloudPayload() {
+    return {
+      version: 2,
+      updatedAt: new Date().toISOString(),
+      locations: LOCATIONS.slice(),
+      transactions: db.transactions.map(normalizeTx)
+    };
+  }
+
+  function listDriveDataFile() {
+    var q = "'appDataFolder' in parents and name='" + DRIVE_FILE_NAME + "' and trashed=false";
+    return driveRequest("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id,name,modifiedTime)&q=" + encodeURIComponent(q))
+      .then(function (r) { return r.json(); });
+  }
+
+  function createDriveDataFile() {
+    return driveRequest("https://www.googleapis.com/drive/v3/files", {
+      method: "POST",
+      body: JSON.stringify({ name: DRIVE_FILE_NAME, parents: ["appDataFolder"], mimeType: "application/json" })
+    }).then(function (r) { return r.json(); });
+  }
+
+  function writeDriveData(fileId, payload) {
+    return driveRequest("https://www.googleapis.com/upload/drive/v3/files/" + encodeURIComponent(fileId) + "?uploadType=media", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); });
+  }
+
+  function readDriveData(fileId) {
+    return driveRequest("https://www.googleapis.com/drive/v3/files/" + encodeURIComponent(fileId) + "?alt=media")
+      .then(function (r) { return r.json(); });
+  }
+
+  function applyCloudData(data) {
+    if (!data || !Array.isArray(data.transactions)) return false;
+    if (Array.isArray(data.locations) && data.locations.length) {
+      var cleaned = [];
+      data.locations.forEach(function (l) {
+        var n = String(l == null ? "" : l).trim();
+        if (n && cleaned.indexOf(n) === -1) cleaned.push(n);
+      });
+      if (cleaned.length) LOCATIONS = cleaned;
+    }
+    var seen = Object.create(null);
+    db = { transactions: data.transactions.map(function (t, i) {
+      var tx = normalizeTx(t);
+      if (seen[tx.id]) tx.id = uid() + i;
+      seen[tx.id] = true;
+      if (!tx.location) tx.location = LOCATIONS[0] || "";
+      return tx;
+    }) };
+    return true;
+  }
+
+  function readLegacyLocalData() {
+    var legacyLocations = null, legacyDB = null;
+    try { legacyLocations = JSON.parse(storage.get(KEY_LOC) || "null"); } catch (e) {}
+    try { legacyDB = JSON.parse(storage.get(KEY_DB) || "null"); } catch (e) {}
+    if (!legacyDB || !Array.isArray(legacyDB.transactions)) return null;
+    return { locations: Array.isArray(legacyLocations) && legacyLocations.length ? legacyLocations : DEFAULT_LOCATIONS.slice(), transactions: legacyDB.transactions };
+  }
+
+  function removeLegacyLocalData() {
+    storage.remove(KEY_DB);
+    storage.remove(KEY_LOC);
+  }
+
+  function syncFromDrive() {
+    if (!googleUser) return Promise.reject(new Error("Not signed in."));
+    setSyncUI("busy", "Checking Google Drive for your latest data…");
+    return ensureGoogleToken(false).then(listDriveDataFile).then(function (result) {
+      var files = result.files || [];
+      if (!files.length) {
+        driveFileId = null;
+        var legacy = readLegacyLocalData();
+        if (legacy) {
+          applyCloudData(legacy);
+          return createDriveDataFile().then(function (f) {
+            driveFileId = f.id;
+            return writeDriveData(driveFileId, getCloudPayload());
+          }).then(function () { removeLegacyLocalData(); });
+        }
+        return createDriveDataFile().then(function (f) { driveFileId = f.id; return writeDriveData(driveFileId, getCloudPayload()); });
+      }
+      driveFileId = files[0].id;
+      return readDriveData(driveFileId).then(function (data) {
+        if (!applyCloudData(data)) throw new Error("Cloud data format is invalid.");
+        removeLegacyLocalData();
+      });
+    }).then(function () {
+      cloudReady = true;
+      cloudLoaded = true;
+      setSyncUI("ok", "All purchases, sales, locations, and reports are synced with Google Drive.");
+      renderAll();
+    }).catch(function (err) {
+      cloudReady = false;
+      setSyncUI("err", err.message || "Could not sync with Google Drive.");
+      throw err;
+    });
+  }
+
+  function syncToDrive() {
+    if (!googleUser || !cloudReady) return Promise.resolve();
+    if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+    return new Promise(function (resolve, reject) {
+      cloudSyncTimer = setTimeout(function () {
+        cloudSyncing = true;
+        setSyncUI("busy", "Saving your latest changes to Google Drive…");
+        ensureGoogleToken(false).then(function () {
+          if (!driveFileId) return createDriveDataFile().then(function (f) { driveFileId = f.id; });
+        }).then(function () {
+          return writeDriveData(driveFileId, getCloudPayload());
+        }).then(function () {
+          cloudSyncing = false;
+          setSyncUI("ok", "Saved to Google Drive just now. Your data will be available on other devices after sign-in.");
+          resolve();
+        }).catch(function (err) {
+          cloudSyncing = false;
+          setSyncUI("err", err.message || "Could not save to Google Drive.");
+          reject(err);
+        });
+      }, 250);
+    });
+  }
+
+  function signInGoogle() {
+    if (!configuredGoogle()) {
+      openBackup();
+      setSyncUI("err", "Google Drive is not configured. Add your Google OAuth Web Client ID in the HTML first.");
+      return;
+    }
+    setSyncUI("busy", "Connecting to your Google account…");
+    ensureGoogleToken(true).then(function () {
+      return fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + googleAccessToken } });
+    }).then(function (r) { if (!r.ok) throw new Error("Could not read Google account information."); return r.json(); })
+      .then(function (u) {
+        googleUser = { name: u.name || u.email || "Google account", email: u.email || "" };
+        setSyncUI("busy", "Signed in. Loading your cloud data…");
+        return syncFromDrive();
+      }).then(function () { toast("Google Drive sync enabled"); closeBackup(); })
+      .catch(function (err) { setSyncUI("err", err.message || "Google sign-in failed."); toast("Google sign-in failed"); });
+  }
+
+  function signOutGoogle() {
+    if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+    if (googleAccessToken && window.google && google.accounts && google.accounts.oauth2) {
+      google.accounts.oauth2.revoke(googleAccessToken, function () {});
+    }
+    googleAccessToken = null; googleTokenExpiry = 0; googleUser = null; driveFileId = null; cloudReady = false; cloudLoaded = false;
+    LOCATIONS = DEFAULT_LOCATIONS.slice(); db = { transactions: [] };
+    setSyncUI("offline", "Signed out. Sign in with the same Google account to load your Drive data.");
+    renderAll();
+    toast("Signed out");
+  }
+
+  function manualCloudSync() {
+    if (!googleUser) { signInGoogle(); return; }
+    syncFromDrive().then(function () { toast("Cloud data refreshed"); }).catch(function () { toast("Sync failed"); });
+  }
+
+  /* ------------------------------------------------------------------
+     Calculations
+  ------------------------------------------------------------------ */
+  function stats() {
+    var total = 0, sold = 0, sales = 0, cost = 0, profit = 0, soldCost = 0;
+    var by = Object.create(null);
+
+    function bucket(name) {
+      if (!by[name]) by[name] = { buy: 0, sell: 0, buyCost: 0, revenue: 0, profit: 0, avg: 0, soldCost: 0 };
+      return by[name];
+    }
+    for (var i = 0; i < LOCATIONS.length; i++) bucket(LOCATIONS[i]);
+
+    for (var j = 0; j < db.transactions.length; j++) {
+      var t = db.transactions[j];
+      var q = num(t.qty), r = num(t.rate), ex = num(t.extra);
+      var totalTx = (q * r) / 1000 + ex;
+      var b = bucket(t.location || "");
+      if (t.type === "purchase") {
+        total += q;
+        cost += totalTx;
+        b.buy += q;
+        b.buyCost += totalTx;
+      } else {
+        sold += q;
+        sales += (q * r) / 1000;
+        b.sell += q;
+        b.revenue += (q * r) / 1000;
+      }
+    }
+
+    Object.keys(by).forEach(function (l) {
+      var x = by[l];
+      x.avg = x.buy ? (x.buyCost / x.buy) * 1000 : 0;
+      x.soldCost = (x.sell * x.avg) / 1000;
+      x.profit = x.revenue - x.soldCost;
+      profit += x.profit;
+      soldCost += x.soldCost;
+    });
+
+    var profitPer1000 = sold ? (profit / sold) * 1000 : 0;
+    var avgSoldCostPer1000 = sold ? (soldCost / sold) * 1000 : 0;
+    var profitPct = avgSoldCostPer1000 ? (profitPer1000 / avgSoldCostPer1000) * 100 : 0;
+
+    return {
+      total: total,
+      sold: sold,
+      remain: total - sold,
+      sales: sales,
+      cost: cost,
+      soldCost: soldCost,
+      profit: profit,
+      avg: total ? (cost / total) * 1000 : 0,
+      profitPer1000: profitPer1000,
+      profitPct: profitPct,
+      by: by
+    };
+  }
+
+  /* ------------------------------------------------------------------
+     Rendering
+  ------------------------------------------------------------------ */
+  function renderDashboard() {
+    var s = stats();
+    $("sTotal").textContent = qty(s.total);
+    $("sSold").textContent = qty(s.sold);
+    $("sRemain").textContent = qty(s.remain);
+    $("sProfit").textContent = money(s.profit);
+    $("sSales").textContent = money(s.sales);
+    $("sCost").textContent = money(s.cost);
+    $("sAvg").textContent = money(s.avg);
+    $("sProfitPer1000").textContent = money(s.profitPer1000);
+    $("sProfitPct").textContent = num(s.profitPct).toLocaleString("en-BD", { maximumFractionDigits: 2 }) + "%";
+
+    /* --- Business summary: margin pill + revenue split bar --- */
+    var margin = s.sales ? (s.profit / s.sales) * 100 : 0;
+    var marginEl = $("sMargin");
+    if (marginEl) {
+      marginEl.textContent = "Margin " + num(margin).toLocaleString("en-BD", { maximumFractionDigits: 1 }) + "%";
+      marginEl.classList.toggle("neg", margin < 0);
+    }
+
+    var salesPos = Math.max(0, s.sales);
+    var profitW = salesPos ? (Math.max(0, s.profit) / salesPos) * 100 : 0;
+    var cogsW = salesPos ? (Math.max(0, s.soldCost) / salesPos) * 100 : 0;
+    var sumW = profitW + cogsW;
+    if (sumW > 100) { profitW = (profitW / sumW) * 100; cogsW = (cogsW / sumW) * 100; }
+
+    var pf = $("bizProfitFill"), cf = $("bizCogsFill");
+    if (pf) pf.style.width = profitW + "%";
+    if (cf) cf.style.width = cogsW + "%";
+
+    var splitText = $("bizSplitText");
+    if (splitText) {
+      splitText.textContent = s.sales || s.soldCost
+        ? ("Profit " + money(s.profit) + " · Cost " + money(s.soldCost))
+        : "No sales recorded yet";
+    }
+
+    /* --- Location cards (with quick delete) --- */
+    $("locations").innerHTML = LOCATIONS.map(function (l) {
+      var x = s.by[l] || { buy: 0, sell: 0 };
+      return '<div class="card loc">' +
+        '<button class="locdel" type="button" data-action="quick-del-loc" data-loc="' + escapeHtml(l) + '" ' +
+          'title="Delete ' + escapeHtml(l) + '" aria-label="Delete location ' + escapeHtml(l) + '">✕</button>' +
+        '<h3>' + escapeHtml(l) + '</h3>' +
+        '<div class="qty">' + qty(x.buy - x.sell) + '</div>' +
+        '<div class="muted">remaining</div>' +
+        '<span class="pill">Sold: ' + qty(x.sell) + '</span>' +
+      '</div>';
+    }).join("");
+  }
+
+  function renderInventory() {
+    var s = stats();
+    var searchEl = $("invSearch");
+    var q = (searchEl ? searchEl.value : "").toLowerCase().trim();
+
+    var totalBuy = 0, totalSell = 0, totalRemain = 0, totalStockValue = 0;
+    LOCATIONS.forEach(function (l) {
+      var x = s.by[l] || { buy: 0, sell: 0, avg: 0 };
+      var remain = x.buy - x.sell;
+      totalBuy += x.buy;
+      totalSell += x.sell;
+      totalRemain += remain;
+      totalStockValue += (Math.max(0, remain) * x.avg) / 1000;
+    });
+
+    $("invTotalBuy").textContent = qty(totalBuy);
+    $("invTotalSold").textContent = qty(totalSell);
+    $("invTotalRemain").textContent = qty(totalRemain);
+    $("invStockValue").textContent = money(totalStockValue);
+
+    var filtered = LOCATIONS.filter(function (l) {
+      return l.toLowerCase().indexOf(q) !== -1;
+    });
+    $("invLocationCount").textContent = filtered.length + (filtered.length === 1 ? " location" : " locations") + (q ? " shown" : "");
+
+    if (!filtered.length) {
+      $("invBody").innerHTML = '<tr><td colspan="6" class="empty">🔎 No matching location found.</td></tr>';
+      return;
+    }
+
+    $("invBody").innerHTML = filtered.map(function (l) {
+      var x = s.by[l] || { buy: 0, sell: 0, avg: 0 };
+      var remain = x.buy - x.sell;
+      var soldPct = x.buy > 0 ? Math.min(100, Math.max(0, (x.sell / x.buy) * 100)) : 0;
+      var stockCost = (Math.max(0, remain) * x.avg) / 1000;
+      return '<tr>' +
+        '<td><div class="inventoryLocation"><span class="inventoryLocationIcon">🧱</span><span class="inventoryLocationName" title="' + escapeHtml(l) + '">' + escapeHtml(l) + '</span></div></td>' +
+        '<td><span class="inventoryNumber">' + qty(x.buy) + '</span></td>' +
+        '<td><span class="inventoryNumber">' + qty(x.sell) + '</span></td>' +
+        '<td class="inventoryRemaining"><div class="inventoryRemainingTop"><strong class="' + (remain < 0 ? "negative" : "positive") + '">' + qty(remain) + '</strong><span class="inventoryPercent">' + num(soldPct).toLocaleString("en-BD", {maximumFractionDigits:0}) + '% sold</span></div><div class="inventoryProgress"><span style="width:' + soldPct + '%"></span></div></td>' +
+        '<td><span class="inventoryAvg">' + money(x.avg) + '</span></td>' +
+        '<td><span class="inventoryStockCost">' + money(stockCost) + '</span></td>' +
+      '</tr>';
+    }).join("");
+  }
+
+  function renderTx() {
+    var purchaseTx = db.transactions.filter(function (t) { return t.type === "purchase"; });
+    var saleTx = db.transactions.filter(function (t) { return t.type === "sale"; });
+
+    var purchaseQty = purchaseTx.reduce(function (a, t) { return a + num(t.qty); }, 0);
+    var saleQty = saleTx.reduce(function (a, t) { return a + num(t.qty); }, 0);
+    var purchaseTotal = purchaseTx.reduce(function (a, t) {
+      return a + (num(t.qty) * num(t.rate)) / 1000 + num(t.extra);
+    }, 0);
+    var saleTotal = saleTx.reduce(function (a, t) {
+      return a + (num(t.qty) * num(t.rate)) / 1000 + num(t.extra);
+    }, 0);
+
+    $("txPurchaseCount").textContent = purchaseTx.length;
+    $("txPurchaseQty").textContent = qty(purchaseQty);
+    $("txPurchaseTotal").textContent = money(purchaseTotal);
+    $("txSaleCount").textContent = saleTx.length;
+    $("txSaleQty").textContent = qty(saleQty);
+    $("txSaleTotal").textContent = money(saleTotal);
+
+    var searchEl = $("txSearch");
+    var q = (searchEl ? searchEl.value : "").toLowerCase().trim();
+
+    var rows = db.transactions.filter(function (t) {
+      if (q === "purchase" || q === "sale") return t.type === q;
+      if (!q) return true;
+      var hay = (t.location + " " + t.type + " " + (t.buyer || "") + " " + (t.status || "")).toLowerCase();
+      return hay.indexOf(q) !== -1;
+    }).slice().reverse();
+
+    if (!rows.length) {
+      $("txBody").innerHTML = '<tr><td colspan="9" class="empty">No transactions yet.</td></tr>';
+      return;
+    }
+
+    $("txBody").innerHTML = rows.map(function (t) {
+      var total = (num(t.qty) * num(t.rate)) / 1000 + num(t.extra);
+      return '<tr>' +
+        '<td>' + escapeHtml(t.date) + '</td>' +
+        '<td><b>' + (t.type === "purchase" ? "Purchase" : "Sale") + '</b></td>' +
+        '<td>' + escapeHtml(t.location) + '</td>' +
+        '<td>' + qty(t.qty) + '</td>' +
+        '<td>' + money(t.rate) + '</td>' +
+        '<td>' + money(total) + '</td>' +
+        '<td>' + (t.buyer ? escapeHtml(t.buyer) : "—") + '</td>' +
+        '<td>' + (t.type === "sale" ? escapeHtml(t.status || "—") : "—") + '</td>' +
+        '<td style="white-space:nowrap">' +
+          '<button class="btn ghost" type="button" style="padding:6px 8px" data-action="edit-tx" data-id="' + escapeHtml(t.id) + '" aria-label="Edit">✎</button> ' +
+          '<button class="btn danger" type="button" style="padding:6px 8px" data-action="del-tx" data-id="' + escapeHtml(t.id) + '" aria-label="Delete">✕</button>' +
+        '</td></tr>';
+    }).join("");
+  }
+
+  function renderReports() {
+    var s = stats();
+    $("rRevenue").textContent = money(s.sales);
+    $("rCogs").textContent = money(s.sales - s.profit);
+    $("rProfit").textContent = money(s.profit);
+
+    $("reportLocations").innerHTML = LOCATIONS.map(function (l) {
+      var x = s.by[l] || { buy: 0, sell: 0, buyCost: 0, revenue: 0, profit: 0, avg: 0 };
+      var remaining = Math.max(0, x.buy - x.sell);
+      var stockCost = (remaining * x.avg) / 1000;
+      var costOfSold = (x.sell * x.avg) / 1000;
+      return '<div class="card panel section" style="margin-top:12px">' +
+        '<div class="sectionhead"><h2 style="font-size:15px">' + escapeHtml(l) + '</h2>' +
+        '<span class="pill">Profit: ' + money(x.profit) + '</span></div>' +
+        '<div class="kpirow">' +
+          '<div class="mini"><span class="muted">Sales</span><strong>' + money(x.revenue) + '</strong></div>' +
+          '<div class="mini"><span class="muted">Cost</span><strong>' + money(costOfSold) + '</strong></div>' +
+          '<div class="mini"><span class="muted">Profit</span><strong class="' + (x.profit >= 0 ? "positive" : "negative") + '">' + money(x.profit) + '</strong></div>' +
+        '</div>' +
+        '<div class="kpirow" style="margin-top:10px">' +
+          '<div class="mini"><span class="muted">Purchased</span><strong>' + qty(x.buy) + '</strong></div>' +
+          '<div class="mini"><span class="muted">Sold</span><strong>' + qty(x.sell) + '</strong></div>' +
+          '<div class="mini"><span class="muted">Remaining</span><strong>' + qty(remaining) + '</strong></div>' +
+        '</div>' +
+        '<div class="muted" style="margin-top:10px">Average cost/1000: <b>' + money(x.avg) + '</b> · Stock cost: <b>' + money(stockCost) + '</b></div>' +
+      '</div>';
+    }).join("");
+  }
+
+  function renderAll() {
+    renderDashboard();
+    renderInventory();
+    renderTx();
+    renderReports();
+  }
+
+  /* ------------------------------------------------------------------
+     Navigation
+  ------------------------------------------------------------------ */
+  function page(id) {
+    var sections = document.querySelectorAll("main section");
+    for (var i = 0; i < sections.length; i++) sections[i].classList.add("hidden");
+
+    var target = $(id);
+    if (target) target.classList.remove("hidden");
+
+    var navs = document.querySelectorAll(".nav");
+    for (var j = 0; j < navs.length; j++) {
+      navs[j].classList.toggle("active", navs[j].getAttribute("data-page") === id);
+    }
+
+    currentPage = id;
+    renderAll();
+    try { window.scrollTo(0, 0); } catch (e) { /* ignore */ }
+  }
+
+  /* ------------------------------------------------------------------
+     Transaction modal
+  ------------------------------------------------------------------ */
+  var modal, txForm;
+
+  function openTx(type, transaction) {
+    var editing = !!transaction;
+    modal.classList.remove("hidden");
+
+    $("txType").value = type;
+    $("editId").value = editing ? transaction.id : "";
+    $("fDate").value = editing ? transaction.date : todayISO();
+    $("fQty").value = editing ? transaction.qty : "";
+    $("fRate").value = editing ? transaction.rate : "";
+    $("fExtra").value = editing ? num(transaction.extra) : 0;
+    $("fBuyer").value = editing ? (transaction.buyer || "") : "";
+    $("fStatus").value = editing ? (transaction.status || "Paid") : "Paid";
+
+    var locSelect = $("fLocation");
+    locSelect.innerHTML = LOCATIONS.map(function (x) {
+      return '<option value="' + escapeHtml(x) + '">' + escapeHtml(x) + '</option>';
+    }).join("");
+
+    if (editing && transaction.location && LOCATIONS.indexOf(transaction.location) === -1) {
+      locSelect.innerHTML += '<option value="' + escapeHtml(transaction.location) + '">' +
+        escapeHtml(transaction.location) + '</option>';
+    }
+
+    var wantLoc = editing ? transaction.location : (LOCATIONS[0] || "");
+    locSelect.value = wantLoc;
+    if (locSelect.selectedIndex === -1 && locSelect.options.length) locSelect.selectedIndex = 0;
+
+    $("modalTitle").textContent = editing
+      ? ("Edit " + (type === "purchase" ? "Purchase" : "Sale"))
+      : (type === "purchase" ? "Add Purchase" : "Add Sale");
+    $("saveBtn").textContent = editing ? "Update transaction" : "Save transaction";
+    $("extraLabel").textContent = type === "purchase" ? "Extra purchase cost (৳)" : "Extra sale cost (৳)";
+    $("buyerLabel").textContent = type === "purchase" ? "Supplier / note" : "Buyer information";
+    $("statusWrap").classList.toggle("hidden", type === "purchase");
+
+    setTimeout(function () {
+      var focusEl = $("fQty");
+      if (focusEl && focusEl.focus) focusEl.focus();
+    }, 60);
+  }
+
+  function closeModal() {
+    modal.classList.add("hidden");
+    $("editId").value = "";
+  }
+
+  function editTx(id) {
+    var t = null;
+    for (var i = 0; i < db.transactions.length; i++) {
+      if (String(db.transactions[i].id) === String(id)) { t = db.transactions[i]; break; }
+    }
+    if (!t) { toast("Transaction not found"); return; }
+    openTx(t.type, t);
+  }
+
+  function delTx(id) {
+    var index = -1;
+    for (var i = 0; i < db.transactions.length; i++) {
+      if (String(db.transactions[i].id) === String(id)) { index = i; break; }
+    }
+    if (index === -1) { toast("Transaction not found"); return; }
+
+    var t = db.transactions[index];
+    var label = t.type === "purchase" ? "purchase" : "sale";
+    if (!window.confirm("Delete this " + label + " transaction?")) return;
+
+    db.transactions.splice(index, 1);
+    storage.set(KEY_DB, JSON.stringify({ transactions: db.transactions }));
+    renderAll();
+    toast("Transaction deleted");
+  }
+
+  function handleTxSubmit(ev) {
+    ev.preventDefault();
+
+    var type = $("txType").value === "sale" ? "sale" : "purchase";
+    var id = $("editId").value;
+    var q = num($("fQty").value);
+    var r = num($("fRate").value);
+    var ex = num($("fExtra").value);
+    var location = $("fLocation").value;
+
+    if (!(q > 0)) { toast("Enter a quantity greater than 0"); $("fQty").focus(); return; }
+    if (r < 0) { toast("Rate cannot be negative"); $("fRate").focus(); return; }
+    if (!$("fDate").value) { toast("Please choose a date"); $("fDate").focus(); return; }
+
+    var old = null;
+    if (id) {
+      for (var i = 0; i < db.transactions.length; i++) {
+        if (String(db.transactions[i].id) === String(id)) { old = db.transactions[i]; break; }
+      }
+    }
+
+    if (type === "sale") {
+      var s = stats();
+      var x = s.by[location] || { buy: 0, sell: 0 };
+      var available = x.buy - x.sell;
+      if (old && old.type === "sale" && old.location === location) available += num(old.qty);
+      if (q > available) {
+        toast("Not enough stock at this location (available " + qty(available) + ")");
+        return;
+      }
+    }
+
+    var updated = normalizeTx({
+      id: id || uid(),
+      date: $("fDate").value,
+      type: type,
+      location: location,
+      qty: q,
+      rate: r,
+      extra: ex,
+      buyer: $("fBuyer").value.trim(),
+      status: $("fStatus").value
+    });
+
+    if (id) {
+      var idx = -1;
+      for (var j = 0; j < db.transactions.length; j++) {
+        if (String(db.transactions[j].id) === String(id)) { idx = j; break; }
+      }
+      if (idx === -1) { toast("Transaction not found"); return; }
+      db.transactions[idx] = updated;
+      closeModal();
+      save();
+      toast("Transaction updated");
+    } else {
+      db.transactions.push(updated);
+      closeModal();
+      save();
+      toast(type === "purchase" ? "Purchase saved" : "Sale saved");
+    }
+  }
+
+  function filterTxType(type) {
+    var input = $("txSearch");
+    input.value = type;
+    renderTx();
+    if (input.focus) input.focus();
+    toast(type === "purchase" ? "Showing all purchase transactions" : "Showing all sell transactions");
+  }
+
+  /* ------------------------------------------------------------------
+     Locations editor
+  ------------------------------------------------------------------ */
+  var locationModal;
+
+  function openLocations() {
+    renderLocationsEditor();
+    locationModal.classList.remove("hidden");
+  }
+  function closeLocations() { locationModal.classList.add("hidden"); }
+
+  function renderLocationsEditor() {
+    $("locationList").innerHTML = LOCATIONS.map(function (loc, i) {
+      return '<div class="card" style="padding:10px;display:flex;align-items:center;gap:8px">' +
+        '<input id="loc_' + i + '" value="' + escapeHtml(loc) + '" autocomplete="off" ' +
+          'style="flex:1;min-width:0;padding:10px;border:1px solid var(--border);border-radius:10px">' +
+        '<button class="btn primary" type="button" data-action="rename-location" data-index="' + i + '">Save</button>' +
+        '<button class="btn danger" type="button" data-action="remove-location" data-index="' + i + '">Delete</button>' +
+      '</div>';
+    }).join("");
+  }
+
+  function addLocation() {
+    var input = $("newLocation");
+    var name = input.value.trim();
+    if (!name) { toast("Enter a location name"); return; }
+    var exists = LOCATIONS.some(function (x) { return x.toLowerCase() === name.toLowerCase(); });
+    if (exists) { toast("Location already exists"); return; }
+
+    LOCATIONS.push(name);
+    saveLocations();
+    input.value = "";
+    renderLocationsEditor();
+    renderAll();
+    toast("Location added");
+  }
+
+  function renameLocation(i) {
+    var input = $("loc_" + i);
+    if (!input) return;
+    var name = input.value.trim();
+    var old = LOCATIONS[i];
+    if (old === undefined) return;
+    if (!name) { toast("Location cannot be empty"); return; }
+
+    var clash = LOCATIONS.some(function (x, j) {
+      return j !== i && x.toLowerCase() === name.toLowerCase();
+    });
+    if (clash) { toast("Location already exists"); return; }
+
+    if (old !== name) {
+      for (var k = 0; k < db.transactions.length; k++) {
+        if (db.transactions[k].location === old) db.transactions[k].location = name;
+      }
+    }
+    LOCATIONS[i] = name;
+    saveLocations();
+    save();
+    renderLocationsEditor();
+    toast("Location updated");
+  }
+
+  /* Shared delete logic — used by editor and dashboard quick-delete */
+  function removeLocationByName(name, index) {
+    if (LOCATIONS.length <= 1) { toast("Keep at least one location"); return; }
+    if (index === undefined || index === null || index < 0) index = LOCATIONS.indexOf(name);
+    if (index === -1) { toast("Location not found"); return; }
+
+    var used = db.transactions.some(function (t) { return t.location === name; });
+    if (used && !window.confirm('"' + name + '" has transactions. Delete it anyway?\n\nIts transactions will keep the old location name in history.')) {
+      return;
+    }
+
+    LOCATIONS.splice(index, 1);
+    saveLocations();
+
+    if (locationModal && !locationModal.classList.contains("hidden")) renderLocationsEditor();
+    renderAll();
+    toast("Location deleted");
+  }
+
+  function removeLocation(i) {
+    var name = LOCATIONS[i];
+    if (name === undefined) return;
+    removeLocationByName(name, i);
+  }
+
+  /* ------------------------------------------------------------------
+     Backup / restore / export
+  ------------------------------------------------------------------ */
+  var backupModal;
+
+  function openBackup() { backupModal.classList.remove("hidden"); }
+  function closeBackup() { backupModal.classList.add("hidden"); }
+
+  function download(filename, text, mime) {
+    var blob = new Blob([text], { type: mime + ";charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+  }
+
+  function exportJSON() {
+    download(
+      "brick-manager-backup.json",
+      JSON.stringify({ transactions: db.transactions, locations: LOCATIONS }, null, 2),
+      "application/json"
+    );
+    toast("Backup created");
+  }
+
+  function restoreJSON(ev) {
+    var input = ev.target;
+    var file = input.files && input.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(String(reader.result));
+        if (!data || !Array.isArray(data.transactions)) throw new Error("bad");
+
+        if (Array.isArray(data.locations) && data.locations.length) {
+          var cleaned = [];
+          data.locations.forEach(function (l) {
+            var n = String(l == null ? "" : l).trim();
+            if (n && cleaned.indexOf(n) === -1) cleaned.push(n);
+          });
+          if (cleaned.length) {
+            LOCATIONS = cleaned;
+            saveLocations();
+          }
+        }
+
+        var seen = Object.create(null);
+        db = {
+          transactions: data.transactions.map(function (t, i) {
+            var tx = normalizeTx(t);
+            if (seen[tx.id]) tx.id = uid() + i;
+            seen[tx.id] = true;
+            if (!tx.location) tx.location = LOCATIONS[0] || "";
+            return tx;
+          })
+        };
+        save();
+        closeBackup();
+        toast("Backup restored");
+      } catch (err) {
+        toast("Invalid backup file");
+      } finally {
+        input.value = "";
+      }
+    };
+    reader.onerror = function () { toast("Could not read file"); input.value = ""; };
+    reader.readAsText(file);
+  }
+
+  function exportCSV() {
+    var header = ["Date", "Type", "Location", "Quantity", "Rate/1000", "Extra Cost", "Total", "Buyer", "Status"];
+    var rows = [header];
+    db.transactions.forEach(function (t) {
+      rows.push([
+        t.date,
+        t.type,
+        t.location,
+        t.qty,
+        t.rate,
+        t.extra,
+        (num(t.qty) * num(t.rate)) / 1000 + num(t.extra),
+        t.buyer || "",
+        t.status || ""
+      ]);
+    });
+    var csv = rows.map(function (row) {
+      return row.map(function (v) {
+        return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+      }).join(",");
+    }).join("\r\n");
+
+    download("brick-transactions.csv", csv, "text/csv");
+    toast("CSV exported");
+  }
+
+  function clearAll() {
+    if (!window.confirm("Delete ALL app data? This cannot be undone.")) return;
+    db = { transactions: [] };
+    LOCATIONS = DEFAULT_LOCATIONS.slice();
+    if (googleUser && cloudReady) {
+      syncToDrive().catch(function () {});
+    } else {
+      removeLegacyLocalData();
+    }
+    renderAll();
+    closeBackup();
+    toast("All app data deleted");
+  }
+
+  /* ------------------------------------------------------------------
+     Event wiring (delegated — no inline handlers, CSP friendly)
+  ------------------------------------------------------------------ */
+  function onAction(ev) {
+    var el = ev.target && ev.target.closest ? ev.target.closest("[data-action]") : null;
+    if (!el) return;
+
+    var action = el.getAttribute("data-action");
+
+    switch (action) {
+      case "page": page(el.getAttribute("data-page")); break;
+      case "new-purchase": openTx("purchase", null); break;
+      case "new-sale": openTx("sale", null); break;
+      case "edit-tx": editTx(el.getAttribute("data-id")); break;
+      case "del-tx": delTx(el.getAttribute("data-id")); break;
+      case "filter-tx": filterTxType(el.getAttribute("data-type")); break;
+      case "close-modal": closeModal(); break;
+      case "open-locations": openLocations(); break;
+      case "close-locations": closeLocations(); break;
+      case "add-location": addLocation(); break;
+      case "rename-location": renameLocation(Number(el.getAttribute("data-index"))); break;
+      case "remove-location": removeLocation(Number(el.getAttribute("data-index"))); break;
+      case "quick-del-loc": removeLocationByName(el.getAttribute("data-loc")); break;
+      case "open-backup": openBackup(); break;
+      case "close-backup": closeBackup(); break;
+      case "google-signin": signInGoogle(); break;
+      case "google-signout": signOutGoogle(); break;
+      case "google-sync": manualCloudSync(); break;
+      case "export-json": exportJSON(); break;
+      case "export-csv": exportCSV(); break;
+      case "clear-all": clearAll(); break;
+      default: break;
+    }
+  }
+
+  function bindBackdropClose(el, closeFn) {
+    el.addEventListener("click", function (ev) {
+      if (ev.target === el) closeFn();
+    });
+  }
+
+  function init() {
+    modal = $("modal");
+    txForm = $("txForm");
+    locationModal = $("locationModal");
+    backupModal = $("backupModal");
+
+    document.addEventListener("click", onAction);
+
+    txForm.addEventListener("submit", handleTxSubmit);
+
+    $("invSearch").addEventListener("input", renderInventory);
+    $("txSearch").addEventListener("input", renderTx);
+
+    $("restoreFile").addEventListener("change", restoreJSON);
+
+    $("newLocation").addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter") { ev.preventDefault(); addLocation(); }
+    });
+
+    bindBackdropClose(modal, closeModal);
+    bindBackdropClose(locationModal, closeLocations);
+    bindBackdropClose(backupModal, closeBackup);
+
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key !== "Escape") return;
+      if (!backupModal.classList.contains("hidden")) { closeBackup(); return; }
+      if (!locationModal.classList.contains("hidden")) { closeLocations(); return; }
+      if (!modal.classList.contains("hidden")) closeModal();
+    });
+
+    setSyncUI("offline");
+    renderAll();
+    page(currentPage);
+    if (!configuredGoogle()) {
+      setSyncUI("err", "Add your Google OAuth Web Client ID in the HTML to enable Google Drive accounts and multi-device sync.");
+    }
+
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
