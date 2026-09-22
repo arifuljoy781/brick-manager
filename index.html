@@ -9,8 +9,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Brick Business Manager</title>
-<script src="./config.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#f4f7f8;--card:#fff;--text:#17212b;--muted:#6b7785;--primary:#0f766e;--primary2:#14b8a6;--danger:#dc2626;--warning:#d97706;--border:#e4e9ee;--shadow:0 8px 28px rgba(20,40,60,.08)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -178,7 +179,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
 @media(max-width:560px){.inventoryHero{padding:18px}.inventoryHero h2{font-size:19px}.inventoryHeroIcon{width:52px;height:52px;flex-basis:52px;font-size:25px}.inventoryKpis{gap:9px}.inventoryKpi{padding:12px;min-height:72px}.inventoryKpi strong{font-size:16px}.inventoryHead{align-items:flex-start;gap:10px}.inventoryActions{flex-wrap:wrap;justify-content:flex-end}.inventoryToolbar{align-items:stretch;flex-direction:column}.inventorySearch{max-width:none;width:100%}.inventoryHint{align-self:flex-start}}
 
 
-/* Google account + cloud sync */
+/* Firebase account + cloud sync */
 .accountbar{display:flex;align-items:center;gap:8px;margin-top:14px;padding:9px 10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.10);border-radius:15px}
 .accountdot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;color:#0f766e;font-weight:800;flex:0 0 auto}
 .accountinfo{min-width:0;flex:1}.accountname{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.accountstatus{font-size:10px;opacity:.78;margin-top:2px}
@@ -190,10 +191,34 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
 .cloudnote strong{display:block;margin-bottom:3px}
 .setupbox{padding:12px;border-radius:13px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px;line-height:1.5}
 @media(max-width:560px){.accountbar{align-items:flex-start}.accountbtn{padding:7px 9px}.syncbadge{font-size:9px}}
+
+/* ===== FIREBASE AUTH SCREEN ===== */
+.authscreen{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 15% 10%,rgba(20,184,166,.20),transparent 30%),radial-gradient(circle at 90% 15%,rgba(37,99,235,.18),transparent 32%),linear-gradient(145deg,#f5f7fb,#eef7f5);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.authcard{width:min(430px,100%);background:#fff;border:1px solid rgba(255,255,255,.8);border-radius:28px;box-shadow:0 25px 70px rgba(15,23,42,.15);padding:28px}
+.authbrand{text-align:center;margin-bottom:22px}.authlogo{width:68px;height:68px;margin:0 auto 12px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:34px;background:linear-gradient(135deg,#0f766e,#14b8a6);box-shadow:0 12px 25px rgba(15,118,110,.25)}
+.authbrand h1{margin:0;font-size:25px;color:#172033}.authbrand p{margin:6px 0 0;color:#718096;font-size:13px}
+.authswitch{display:grid;grid-template-columns:1fr 1fr;background:#f1f5f9;border-radius:12px;padding:4px;margin-bottom:18px}.authswitch button{border:0;background:transparent;border-radius:9px;padding:10px;font-weight:700;color:#64748b}.authswitch button.active{background:#fff;color:#0f766e;box-shadow:0 3px 10px rgba(15,23,42,.08)}
+.authfield{margin-bottom:13px}.authfield label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px}.authinputwrap{position:relative}.authinput{width:100%;padding:13px 44px 13px 13px;border:1px solid #e2e8f0;border-radius:12px;outline:none;background:#fff}.authinput:focus{border-color:#14b8a6;box-shadow:0 0 0 3px rgba(20,184,166,.10)}.authshow{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:#f1f5f9;color:#64748b;border-radius:8px;padding:6px 8px;font-size:11px}.authsubmit{width:100%;border:0;border-radius:12px;padding:13px;background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;font-weight:800;font-size:14px;box-shadow:0 10px 22px rgba(15,118,110,.22)}.authsubmit:disabled{opacity:.65;cursor:not-allowed}.authforgot{border:0;background:none;color:#0f766e;font-size:12px;font-weight:700;padding:8px 0;display:block;margin-left:auto}.authmsg{min-height:20px;margin:8px 0 2px;font-size:12px;text-align:center;color:#dc2626}.authfoot{margin-top:14px;text-align:center;font-size:11px;color:#94a3b8;line-height:1.5}.authloading{position:fixed;inset:0;z-index:110;background:#f5f7fb;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:#475569}.spinner{width:34px;height:34px;border:3px solid #dbe7e5;border-top-color:#0f766e;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-<div class="app">
+<div id="authLoading" class="authloading"><div class="spinner"></div><strong>Loading Brick Manager…</strong></div>
+<div id="authScreen" class="authscreen hidden">
+  <div class="authcard">
+    <div class="authbrand"><div class="authlogo">🧱</div><h1>Brick Manager</h1><p>Manage your purchases, sales, inventory &amp; profit</p></div>
+    <div class="authswitch"><button id="loginTab" class="active" type="button">Log in</button><button id="registerTab" type="button">Create account</button></div>
+    <form id="authForm">
+      <div class="authfield"><label for="authEmail">Email address</label><input class="authinput" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+      <div class="authfield"><label for="authPassword">Password</label><div class="authinputwrap"><input class="authinput" id="authPassword" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="6" required><button class="authshow" id="togglePassword" type="button">Show</button></div></div>
+      <div id="registerConfirmWrap" class="authfield hidden"><label for="authPassword2">Confirm password</label><div class="authinputwrap"><input class="authinput" id="authPassword2" type="password" autocomplete="new-password" placeholder="Enter password again" minlength="6"></div></div>
+      <button id="forgotBtn" class="authforgot" type="button">Forgot password?</button>
+      <div id="authMsg" class="authmsg" role="alert"></div>
+      <button id="authSubmit" class="authsubmit" type="submit">Log in</button>
+    </form>
+    <div class="authfoot">Your account data is stored securely in your Firebase cloud database and is linked to your account.</div>
+  </div>
+</div>
+<div id="appRoot" class="app hidden">
 <header class="top">
   <div class="topline">
     <div><div class="brand">🧱 Brick Manager</div><div class="sub">Inventory • Purchase • Sales • Profit</div></div>
@@ -203,7 +228,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     <div class="accountdot" id="accountAvatar">G</div>
     <div class="accountinfo"><div class="accountname" id="accountName">Not signed in</div><div class="accountstatus" id="accountStatus">Sign in to sync across devices</div></div>
     <span class="syncbadge" id="syncBadge">☁️ Offline</span>
-    <button class="accountbtn" id="accountBtn" type="button" data-action="google-signin">Sign in with Google</button>
+    <button class="accountbtn" id="accountBtn" type="button" data-action="firebase-signout">Logout</button>
   </div>
 </header>
 
@@ -382,11 +407,9 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
 <div id="backupModal" class="modal hidden">
  <div class="modalbox" role="dialog" aria-modal="true" aria-labelledby="bakTitle">
   <div class="modalhead"><h2 id="bakTitle">Data &amp; Backup</h2><button class="close" type="button" data-action="close-backup" aria-label="Close">✕</button></div>
-  <div class="cloudnote"><strong>☁️ Google Drive sync</strong><span id="cloudBackupStatus">Sign in with Google to keep purchases, sales, locations, and reports synced across your devices.</span></div>
-  <div id="cloudSetupNote" class="setupbox" style="display:none;margin-top:10px">Google Drive is not configured yet. Add your Google OAuth Web Client ID in the HTML once, then open the app from an allowed web origin.</div>
+  <div class="cloudnote"><strong>☁️ Firebase cloud sync</strong><span id="cloudBackupStatus">Your account data is synced to the cloud automatically after every change.</span></div>
   <div style="display:grid;gap:10px;margin-top:10px">
-   <button class="btn primary" type="button" data-action="google-signin">☁️ Sign in &amp; sync Google Drive</button>
-   <button class="btn ghost" type="button" data-action="google-sync">🔄 Sync now</button>
+   <button class="btn ghost" type="button" data-action="firebase-sync">🔄 Refresh cloud data</button>
    <button class="btn ghost" type="button" data-action="export-json">⬇️ Backup JSON</button>
    <label class="btn ghost" style="text-align:center;display:block;cursor:pointer">⬆️ Restore JSON<input id="restoreFile" type="file" accept=".json,application/json" style="display:none"></label>
    <button class="btn ghost" type="button" data-action="export-csv">⬇️ Export CSV</button>
@@ -494,19 +517,19 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
   var KEY_DB = "brickManagerDB";
   var KEY_LOC = "brickManagerLocations";
 
-  /* Google Drive cloud account. Replace this with your OAuth Web Client ID. */
-  var GOOGLE_CLIENT_ID = (window.BRICK_MANAGER_CONFIG && window.BRICK_MANAGER_CONFIG.googleClientId) || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
-  var DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.appdata";
-  var DRIVE_FILE_NAME = "brick-manager-data.json";
-  var googleTokenClient = null;
-  var googleAccessToken = null;
-  var googleTokenExpiry = 0;
-  var googleUser = null;
-  var driveFileId = null;
+  /* Firebase Web configuration. Access to each user's data is enforced by Firestore Security Rules. */
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBL4JkBkIMCfZEIEaEIXWVNBo1VMFoENMI",
+    authDomain: "brick-manager-509308.firebaseapp.com",
+    projectId: "brick-manager-509308",
+    storageBucket: "brick-manager-509308.firebasestorage.app",
+    messagingSenderId: "790883728770",
+    appId: "1:790883728770:web:6a17612711f556e202e39b",
+    measurementId: "G-6C5TL51LGJ"
+  };
+
   var cloudReady = false;
-  var cloudSyncing = false;
-  var cloudSyncTimer = null;
-  var cloudLoaded = false;
+  var firebaseSaveTimer = null;
 
   var DEFAULT_LOCATIONS = [
     "Chowrasta Mor",
@@ -538,7 +561,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
   }
 
   function saveLocations() {
-    if (googleUser && cloudReady) syncToDrive().catch(function () {});
+    if (firebaseUser && firebaseReady) firebaseSaveData().catch(function () {});
   }
 
   function normalizeTx(t) {
@@ -575,248 +598,268 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     return { transactions: out };
   }
 
-  function save() {
-    /* Cloud is the source of truth. localStorage is only used once to migrate old data. */
-    renderAll();
-    if (googleUser && cloudReady) syncToDrive().catch(function () {});
-  }
-
-  /* ------------------------------------------------------------------
-     Google account + Drive cloud sync
-  ------------------------------------------------------------------ */
-  function configuredGoogle() {
-    return GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID.indexOf("YOUR_GOOGLE_CLIENT_ID") !== 0;
-  }
-
-  function setSyncUI(state, message) {
-    var badge = $("syncBadge"), status = $("accountStatus"), name = $("accountName"), btn = $("accountBtn"), avatar = $("accountAvatar"), note = $("cloudBackupStatus"), setup = $("cloudSetupNote");
-    if (setup) setup.style.display = configuredGoogle() ? "none" : "block";
-    if (googleUser) {
-      name.textContent = googleUser.name || googleUser.email || "Google account";
-      status.textContent = googleUser.email || "Google account connected";
-      avatar.textContent = (googleUser.name || googleUser.email || "G").charAt(0).toUpperCase();
-      btn.textContent = "Sign out";
-      btn.setAttribute("data-action", "google-signout");
-    } else {
-      name.textContent = "Not signed in";
-      status.textContent = configuredGoogle() ? "Sign in to sync across devices" : "Google Drive setup required";
-      avatar.textContent = "G";
-      btn.textContent = "Sign in with Google";
-      btn.setAttribute("data-action", "google-signin");
-    }
-    if (badge) {
-      badge.className = "syncbadge" + (state === "ok" ? " ok" : state === "busy" ? " busy" : state === "err" ? " err" : "");
-      badge.textContent = state === "ok" ? "☁️ Synced" : state === "busy" ? "⏳ Syncing" : state === "err" ? "⚠️ Sync error" : "☁️ Offline";
-    }
-    if (note) note.textContent = message || (googleUser ? "Your app data is stored in your Google Drive application data and can be loaded on another device when you sign in with the same Google account." : "Sign in with Google to keep purchases, sales, locations, and reports synced across your devices.");
-  }
-
-  function driveRequest(url, options) {
-    options = options || {};
-    options.headers = options.headers || {};
-    options.headers.Authorization = "Bearer " + googleAccessToken;
-    if (options.body && !options.headers["Content-Type"]) options.headers["Content-Type"] = "application/json";
-    return fetch(url, options).then(function (res) {
-      if (!res.ok) return res.text().then(function (txt) { throw new Error("Drive " + res.status + ": " + txt); });
-      return res;
-    });
-  }
-
-  function requestGoogleToken(interactive) {
-    return new Promise(function (resolve, reject) {
-      if (!configuredGoogle()) return reject(new Error("Google OAuth Client ID is not configured."));
-      if (!window.google || !google.accounts || !google.accounts.oauth2) return reject(new Error("Google Identity Services has not loaded yet."));
-      if (!googleTokenClient) {
-        googleTokenClient = google.accounts.oauth2.initTokenClient({
-          client_id: GOOGLE_CLIENT_ID,
-          scope: "openid email profile " + DRIVE_SCOPE,
-          callback: function (response) {
-            if (response && response.access_token) {
-              googleAccessToken = response.access_token;
-              googleTokenExpiry = Date.now() + ((Number(response.expires_in) || 3600) * 1000) - 60000;
-              resolve(response);
-            } else reject(new Error("Google authorization was not completed."));
-          },
-          error_callback: function (err) { reject(new Error((err && err.type) || "Google authorization failed.")); }
-        });
-      } else {
-        googleTokenClient.callback = function (response) {
-          if (response && response.access_token) {
-            googleAccessToken = response.access_token;
-            googleTokenExpiry = Date.now() + ((Number(response.expires_in) || 3600) * 1000) - 60000;
-            resolve(response);
-          } else reject(new Error("Google authorization was not completed."));
-        };
-      }
-      googleTokenClient.requestAccessToken({ prompt: interactive ? "consent" : "" });
-    });
-  }
-
-  function ensureGoogleToken(interactive) {
-    if (googleAccessToken && Date.now() < googleTokenExpiry) return Promise.resolve();
-    return requestGoogleToken(!!interactive);
-  }
-
-  function getCloudPayload() {
-    return {
-      version: 2,
-      updatedAt: new Date().toISOString(),
-      locations: LOCATIONS.slice(),
-      transactions: db.transactions.map(normalizeTx)
-    };
-  }
-
-  function listDriveDataFile() {
-    var q = "'appDataFolder' in parents and name='" + DRIVE_FILE_NAME + "' and trashed=false";
-    return driveRequest("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id,name,modifiedTime)&q=" + encodeURIComponent(q))
-      .then(function (r) { return r.json(); });
-  }
-
-  function createDriveDataFile() {
-    return driveRequest("https://www.googleapis.com/drive/v3/files", {
-      method: "POST",
-      body: JSON.stringify({ name: DRIVE_FILE_NAME, parents: ["appDataFolder"], mimeType: "application/json" })
-    }).then(function (r) { return r.json(); });
-  }
-
-  function writeDriveData(fileId, payload) {
-    return driveRequest("https://www.googleapis.com/upload/drive/v3/files/" + encodeURIComponent(fileId) + "?uploadType=media", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    }).then(function (r) { return r.json(); });
-  }
-
-  function readDriveData(fileId) {
-    return driveRequest("https://www.googleapis.com/drive/v3/files/" + encodeURIComponent(fileId) + "?alt=media")
-      .then(function (r) { return r.json(); });
-  }
-
-  function applyCloudData(data) {
-    if (!data || !Array.isArray(data.transactions)) return false;
-    if (Array.isArray(data.locations) && data.locations.length) {
-      var cleaned = [];
-      data.locations.forEach(function (l) {
-        var n = String(l == null ? "" : l).trim();
-        if (n && cleaned.indexOf(n) === -1) cleaned.push(n);
-      });
-      if (cleaned.length) LOCATIONS = cleaned;
-    }
-    var seen = Object.create(null);
-    db = { transactions: data.transactions.map(function (t, i) {
-      var tx = normalizeTx(t);
-      if (seen[tx.id]) tx.id = uid() + i;
-      seen[tx.id] = true;
-      if (!tx.location) tx.location = LOCATIONS[0] || "";
-      return tx;
-    }) };
-    return true;
-  }
-
   function readLegacyLocalData() {
-    var legacyLocations = null, legacyDB = null;
-    try { legacyLocations = JSON.parse(storage.get(KEY_LOC) || "null"); } catch (e) {}
-    try { legacyDB = JSON.parse(storage.get(KEY_DB) || "null"); } catch (e) {}
-    if (!legacyDB || !Array.isArray(legacyDB.transactions)) return null;
-    return { locations: Array.isArray(legacyLocations) && legacyLocations.length ? legacyLocations : DEFAULT_LOCATIONS.slice(), transactions: legacyDB.transactions };
+    var transactions = [];
+    var locations = DEFAULT_LOCATIONS.slice();
+    try {
+      var rawDb = storage.get(KEY_DB);
+      if (rawDb) {
+        var parsedDb = JSON.parse(rawDb);
+        if (parsedDb && Array.isArray(parsedDb.transactions)) transactions = parsedDb.transactions;
+      }
+    } catch (e) {}
+    try {
+      var rawLoc = storage.get(KEY_LOC);
+      if (rawLoc) {
+        var parsedLoc = JSON.parse(rawLoc);
+        if (Array.isArray(parsedLoc) && parsedLoc.length) locations = parsedLoc;
+      }
+    } catch (e) {}
+    return { transactions: transactions, locations: locations };
   }
 
   function removeLegacyLocalData() {
-    storage.remove(KEY_DB);
-    storage.remove(KEY_LOC);
+    try { storage.remove(KEY_DB); } catch (e) {}
+    try { storage.remove(KEY_LOC); } catch (e) {}
   }
 
-  function syncFromDrive() {
-    if (!googleUser) return Promise.reject(new Error("Not signed in."));
-    setSyncUI("busy", "Checking Google Drive for your latest data…");
-    return ensureGoogleToken(false).then(listDriveDataFile).then(function (result) {
-      var files = result.files || [];
-      if (!files.length) {
-        driveFileId = null;
-        var legacy = readLegacyLocalData();
-        if (legacy) {
-          applyCloudData(legacy);
-          return createDriveDataFile().then(function (f) {
-            driveFileId = f.id;
-            return writeDriveData(driveFileId, getCloudPayload());
-          }).then(function () { removeLegacyLocalData(); });
-        }
-        return createDriveDataFile().then(function (f) { driveFileId = f.id; return writeDriveData(driveFileId, getCloudPayload()); });
-      }
-      driveFileId = files[0].id;
-      return readDriveData(driveFileId).then(function (data) {
-        if (!applyCloudData(data)) throw new Error("Cloud data format is invalid.");
+  function applyCloudData(data) {
+    data = data || {};
+    var incomingLocations = Array.isArray(data.locations) ? data.locations : [];
+    var cleanedLocations = [];
+    for (var i = 0; i < incomingLocations.length; i++) {
+      var location = String(incomingLocations[i] == null ? "" : incomingLocations[i]).trim();
+      if (location && cleanedLocations.indexOf(location) === -1) cleanedLocations.push(location);
+    }
+    LOCATIONS = cleanedLocations.length ? cleanedLocations : DEFAULT_LOCATIONS.slice();
+
+    var incomingTransactions = Array.isArray(data.transactions) ? data.transactions : [];
+    var seen = Object.create(null);
+    db.transactions = [];
+    for (var j = 0; j < incomingTransactions.length; j++) {
+      var tx = normalizeTx(incomingTransactions[j]);
+      if (seen[tx.id]) tx.id = uid() + j;
+      seen[tx.id] = true;
+      if (!tx.location) tx.location = LOCATIONS[0] || "";
+      db.transactions.push(tx);
+    }
+  }
+
+  function firebaseErrorMessage(err, action) {
+    var code = err && err.code ? String(err.code) : "unknown";
+    var raw = err && err.message ? String(err.message) : "Unknown Firebase error.";
+    if (code === "permission-denied") {
+      return (action || "Cloud operation") + " failed [permission-denied]. Check Firestore Rules for /users/{userId} and make sure userId matches request.auth.uid.";
+    }
+    if (code === "failed-precondition") {
+      return (action || "Cloud operation") + " failed [failed-precondition]. Check that Firestore Database is created and available.";
+    }
+    if (code === "unavailable") {
+      return (action || "Cloud operation") + " failed [unavailable]. Check your internet connection and Firebase status.";
+    }
+    return (action || "Cloud operation") + " failed [" + code + "]: " + raw;
+  }
+
+  function save() {
+    /* Firebase is the source of truth. localStorage is only a one-time migration fallback. */
+    renderAll();
+    if (firebaseUser && firebaseReady) firebaseSaveData().catch(function () {});
+  }
+
+  /* ------------------------------------------------------------------
+     Firebase account + cloud database
+  ------------------------------------------------------------------ */
+  var firebaseAuth = null;
+  var firebaseDB = null;
+  var firebaseUser = null;
+  var firebaseReady = false;
+  var appStarted = false;
+
+  function firebaseConfigReady() {
+    return !!(FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.appId);
+  }
+
+  function authErrorMessage(err) {
+    var code = err && err.code ? String(err.code) : "";
+    var map = {
+      "auth/invalid-email":"Please enter a valid email address.",
+      "auth/user-not-found":"No account was found with this email.",
+      "auth/wrong-password":"Incorrect password.",
+      "auth/invalid-credential":"Email or password is incorrect.",
+      "auth/email-already-in-use":"An account already exists with this email.",
+      "auth/weak-password":"Password must be at least 6 characters.",
+      "auth/too-many-requests":"Too many attempts. Please wait a while and try again.",
+      "auth/network-request-failed":"Network error. Check your internet connection.",
+      "auth/operation-not-allowed":"Email/password sign-in is not enabled in Firebase yet."
+    };
+    return map[code] || (err && err.message ? String(err.message).replace(/^Firebase:\s*/i, "") : "Something went wrong. Please try again.");
+  }
+
+  function showAuthMessage(msg) { var el=$("authMsg"); if(el) el.textContent=msg||""; }
+
+  function setAuthMode(mode) {
+    var login = mode === "login";
+    $("loginTab").classList.toggle("active", login);
+    $("registerTab").classList.toggle("active", !login);
+    $("registerConfirmWrap").classList.toggle("hidden", login);
+    $("forgotBtn").classList.toggle("hidden", !login);
+    $("authSubmit").textContent = login ? "Log in" : "Create account";
+    $("authPassword").setAttribute("autocomplete", login ? "current-password" : "new-password");
+    showAuthMessage("");
+  }
+
+  function setAuthBusy(busy) {
+    $("authSubmit").disabled = busy;
+    $("authSubmit").textContent = busy ? "Please wait…" : ($("loginTab").classList.contains("active") ? "Log in" : "Create account");
+  }
+
+  function openAuthScreen() { $("authScreen").classList.remove("hidden"); $("appRoot").classList.add("hidden"); $("authLoading").classList.add("hidden"); }
+  function openAppScreen() { $("authScreen").classList.add("hidden"); $("appRoot").classList.remove("hidden"); $("authLoading").classList.add("hidden"); }
+
+  function cloudPayload() {
+    return {
+      transactions: db.transactions.map(normalizeTx),
+      locations: LOCATIONS.slice(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+  }
+
+  function userDataRef() {
+    if (!firebaseUser || !firebaseDB) return null;
+    return firebaseDB.collection("users").doc(firebaseUser.uid);
+  }
+
+  function firebaseLoadData() {
+    if (!firebaseUser) return Promise.reject(new Error("Not signed in."));
+    var ref = userDataRef();
+    setSyncUI("busy", "Loading your cloud data…");
+    return ref.get().then(function(doc) {
+      if (doc.exists) {
+        var data = doc.data() || {};
+        applyCloudData({transactions:data.transactions, locations:data.locations});
         removeLegacyLocalData();
-      });
-    }).then(function () {
-      cloudReady = true;
-      cloudLoaded = true;
-      setSyncUI("ok", "All purchases, sales, locations, and reports are synced with Google Drive.");
+        return null;
+      }
+      var legacy = readLegacyLocalData();
+      if (legacy) applyCloudData(legacy);
+      return ref.set(cloudPayload()).then(function(){ removeLegacyLocalData(); });
+    }).then(function(){
+      firebaseReady = true;
+      setSyncUI("ok", "Your purchases, sales, inventory, locations, and reports are synced automatically.");
       renderAll();
-    }).catch(function (err) {
-      cloudReady = false;
-      setSyncUI("err", err.message || "Could not sync with Google Drive.");
+    }).catch(function(err){
+      firebaseReady = false;
+      setSyncUI("err", firebaseErrorMessage(err, "Cloud load"));
       throw err;
     });
   }
 
-  function syncToDrive() {
-    if (!googleUser || !cloudReady) return Promise.resolve();
-    if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
-    return new Promise(function (resolve, reject) {
-      cloudSyncTimer = setTimeout(function () {
-        cloudSyncing = true;
-        setSyncUI("busy", "Saving your latest changes to Google Drive…");
-        ensureGoogleToken(false).then(function () {
-          if (!driveFileId) return createDriveDataFile().then(function (f) { driveFileId = f.id; });
-        }).then(function () {
-          return writeDriveData(driveFileId, getCloudPayload());
-        }).then(function () {
-          cloudSyncing = false;
-          setSyncUI("ok", "Saved to Google Drive just now. Your data will be available on other devices after sign-in.");
+  function firebaseSaveData() {
+    if (!firebaseUser || !firebaseReady || !firebaseDB) return Promise.resolve();
+    if (firebaseSaveTimer) clearTimeout(firebaseSaveTimer);
+    return new Promise(function(resolve,reject){
+      firebaseSaveTimer=setTimeout(function(){
+        setSyncUI("busy", "Saving your latest changes…");
+        userDataRef().set(cloudPayload(), {merge:true}).then(function(){
+          setSyncUI("ok", "Saved to cloud just now.");
           resolve();
-        }).catch(function (err) {
-          cloudSyncing = false;
-          setSyncUI("err", err.message || "Could not save to Google Drive.");
+        }).catch(function(err){
+          setSyncUI("err", firebaseErrorMessage(err, "Cloud save"));
           reject(err);
         });
       }, 250);
     });
   }
 
-  function signInGoogle() {
-    if (!configuredGoogle()) {
-      openBackup();
-      setSyncUI("err", "Google Drive is not configured. Add your Google OAuth Web Client ID in the HTML first.");
-      return;
-    }
-    setSyncUI("busy", "Connecting to your Google account…");
-    ensureGoogleToken(true).then(function () {
-      return fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + googleAccessToken } });
-    }).then(function (r) { if (!r.ok) throw new Error("Could not read Google account information."); return r.json(); })
-      .then(function (u) {
-        googleUser = { name: u.name || u.email || "Google account", email: u.email || "" };
-        setSyncUI("busy", "Signed in. Loading your cloud data…");
-        return syncFromDrive();
-      }).then(function () { toast("Google Drive sync enabled"); closeBackup(); })
-      .catch(function (err) { setSyncUI("err", err.message || "Google sign-in failed."); toast("Google sign-in failed"); });
+  function firebaseRefresh() {
+    return firebaseLoadData().then(function(){ toast("Cloud data refreshed"); }).catch(function(){ toast("Could not refresh cloud data"); });
   }
 
-  function signOutGoogle() {
-    if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
-    if (googleAccessToken && window.google && google.accounts && google.accounts.oauth2) {
-      google.accounts.oauth2.revoke(googleAccessToken, function () {});
-    }
-    googleAccessToken = null; googleTokenExpiry = 0; googleUser = null; driveFileId = null; cloudReady = false; cloudLoaded = false;
-    LOCATIONS = DEFAULT_LOCATIONS.slice(); db = { transactions: [] };
-    setSyncUI("offline", "Signed out. Sign in with the same Google account to load your Drive data.");
-    renderAll();
-    toast("Signed out");
+  function firebaseSignOut() {
+    if (!firebaseAuth) return;
+    if (firebaseSaveTimer) clearTimeout(firebaseSaveTimer);
+    firebaseAuth.signOut().catch(function(err){ toast(authErrorMessage(err)); });
   }
 
-  function manualCloudSync() {
-    if (!googleUser) { signInGoogle(); return; }
-    syncFromDrive().then(function () { toast("Cloud data refreshed"); }).catch(function () { toast("Sync failed"); });
+  function handleAuthSubmit(ev) {
+    ev.preventDefault();
+    if (!firebaseAuth) { showAuthMessage("Firebase could not start. Please refresh the page."); return; }
+    var email=$("authEmail").value.trim();
+    var password=$("authPassword").value;
+    var login=$("loginTab").classList.contains("active");
+    showAuthMessage("");
+    if (!email || !password) { showAuthMessage("Enter your email and password."); return; }
+    if (!login && password !== $("authPassword2").value) { showAuthMessage("Passwords do not match."); return; }
+    setAuthBusy(true);
+    var task = login ? firebaseAuth.signInWithEmailAndPassword(email,password) : firebaseAuth.createUserWithEmailAndPassword(email,password);
+    task.catch(function(err){ showAuthMessage(authErrorMessage(err)); setAuthBusy(false); });
+  }
+
+  function forgotPassword() {
+    if (!firebaseAuth) return;
+    var email=$("authEmail").value.trim();
+    if (!email) { showAuthMessage("Enter your email address first."); return; }
+    firebaseAuth.sendPasswordResetEmail(email).then(function(){ showAuthMessage("Password reset email sent. Check your inbox."); }).catch(function(err){ showAuthMessage(authErrorMessage(err)); });
+  }
+
+  function initFirebase() {
+    if (!firebaseConfigReady()) { openAuthScreen(); showAuthMessage("Firebase configuration is missing."); return; }
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      firebaseAuth=firebase.auth();
+      firebaseDB=firebase.firestore();
+      firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(function(){
+        firebaseAuth.onAuthStateChanged(function(user){
+          firebaseUser=user||null;
+          if (user) {
+            $("accountName").textContent=user.email||"Account";
+            $("accountStatus").textContent="Signed in • cloud sync enabled";
+            $("accountAvatar").textContent=(user.email||"A").charAt(0).toUpperCase();
+            setAuthBusy(false);
+            firebaseLoadData().then(function(){
+              openAppScreen();
+              if(!appStarted){appStarted=true; renderAll(); page(currentPage);}
+            }).catch(function(err){
+              openAppScreen();
+              setSyncUI("err",firebaseErrorMessage(err,"Cloud load"));
+              if(!appStarted){appStarted=true; renderAll(); page(currentPage);}
+            });
+          } else {
+            firebaseReady=false;
+            LOCATIONS=DEFAULT_LOCATIONS.slice();
+            db={transactions:[]};
+            openAuthScreen();
+            $("accountName").textContent="Not signed in";
+            $("accountStatus").textContent="Sign in to access your business data";
+            $("accountAvatar").textContent="G";
+            setAuthMode("login");
+            setSyncUI("offline", "Log in to sync your business data across devices.");
+          }
+        });
+      }).catch(function(err){ showAuthMessage(authErrorMessage(err)); });
+    } catch(err) { showAuthMessage("Firebase could not start: "+(err.message||err)); }
+  }
+
+  function setSyncUI(state, message) {
+    var badge = $("syncBadge"), status = $("accountStatus"), name = $("accountName"), btn = $("accountBtn"), avatar = $("accountAvatar"), note = $("cloudBackupStatus");
+    if (firebaseUser) {
+      name.textContent = firebaseUser.email || "Account";
+      status.textContent = "Signed in • cloud sync enabled";
+      avatar.textContent = (firebaseUser.email || "A").charAt(0).toUpperCase();
+      btn.textContent = "Logout";
+      btn.setAttribute("data-action", "firebase-signout");
+    } else {
+      name.textContent = "Not signed in";
+      status.textContent = "Sign in to access your business data";
+      avatar.textContent = "G";
+      btn.textContent = "Logout";
+      btn.setAttribute("data-action", "firebase-signout");
+    }
+    if (badge) {
+      badge.className = "syncbadge" + (state === "ok" ? " ok" : state === "busy" ? " busy" : state === "err" ? " err" : "");
+      badge.textContent = state === "ok" ? "☁️ Synced" : state === "busy" ? "⏳ Syncing" : state === "err" ? "⚠️ Sync error" : "☁️ Offline";
+    }
+    if (note) note.textContent = message || (firebaseUser ? "Your purchases, sales, locations, and reports are synced to your Firebase account." : "Log in to sync your business data across devices.");
   }
 
   /* ------------------------------------------------------------------
@@ -1159,8 +1202,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     if (!window.confirm("Delete this " + label + " transaction?")) return;
 
     db.transactions.splice(index, 1);
-    storage.set(KEY_DB, JSON.stringify({ transactions: db.transactions }));
-    renderAll();
+    save();
     toast("Transaction deleted");
   }
 
@@ -1427,8 +1469,8 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     if (!window.confirm("Delete ALL app data? This cannot be undone.")) return;
     db = { transactions: [] };
     LOCATIONS = DEFAULT_LOCATIONS.slice();
-    if (googleUser && cloudReady) {
-      syncToDrive().catch(function () {});
+    if (firebaseUser && firebaseReady) {
+      firebaseSaveData().catch(function () {});
     } else {
       removeLegacyLocalData();
     }
@@ -1462,9 +1504,8 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       case "quick-del-loc": removeLocationByName(el.getAttribute("data-loc")); break;
       case "open-backup": openBackup(); break;
       case "close-backup": closeBackup(); break;
-      case "google-signin": signInGoogle(); break;
-      case "google-signout": signOutGoogle(); break;
-      case "google-sync": manualCloudSync(); break;
+      case "firebase-signout": firebaseSignOut(); break;
+      case "firebase-sync": firebaseRefresh(); break;
       case "export-json": exportJSON(); break;
       case "export-csv": exportCSV(); break;
       case "clear-all": clearAll(); break;
@@ -1493,6 +1534,12 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
 
     $("restoreFile").addEventListener("change", restoreJSON);
 
+    $("authForm").addEventListener("submit", handleAuthSubmit);
+    $("loginTab").addEventListener("click", function(){ setAuthMode("login"); });
+    $("registerTab").addEventListener("click", function(){ setAuthMode("register"); });
+    $("forgotBtn").addEventListener("click", forgotPassword);
+    $("togglePassword").addEventListener("click", function(){ var p=$("authPassword"); var show=p.type === "password"; p.type=show?"text":"password"; this.textContent=show?"Hide":"Show"; });
+
     $("newLocation").addEventListener("keydown", function (ev) {
       if (ev.key === "Enter") { ev.preventDefault(); addLocation(); }
     });
@@ -1508,12 +1555,8 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       if (!modal.classList.contains("hidden")) closeModal();
     });
 
-    setSyncUI("offline");
-    renderAll();
-    page(currentPage);
-    if (!configuredGoogle()) {
-      setSyncUI("err", "Add your Google OAuth Web Client ID in the HTML to enable Google Drive accounts and multi-device sync.");
-    }
+    setSyncUI("busy", "Checking your account…");
+    initFirebase();
 
   }
 
