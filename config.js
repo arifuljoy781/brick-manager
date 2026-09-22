@@ -2,5 +2,5 @@
 // Replace the value below with your Google OAuth 2.0 Web Client ID.
 // Example: 1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com
 window.BRICK_MANAGER_CONFIG = {
-  googleClientId: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+  googleClientId: "790883728770-bn3c6gnfa7mkme45ahci6rijk198m37k.apps.googleusercontent.com"
 };
