@@ -40,6 +40,7 @@ button,input,select{font:inherit;color:inherit}button{cursor:pointer}
 .panel{padding:16px}.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.field input,.field select{width:100%;padding:12px;border:1px solid var(--border);border-radius:11px;background:#fff;outline:none}.field input:focus,.field select:focus{border-color:var(--primary)}
 .full{grid-column:1/-1}.btn{border:0;border-radius:11px;padding:12px 15px;font-weight:700}.primary{background:var(--primary);color:#fff}.ghost{background:#eef5f5;color:#0f766e}.danger{background:#fee2e2;color:#991b1b}
 .tablewrap{overflow:auto;-webkit-overflow-scrolling:touch}.table{width:100%;border-collapse:collapse;min-width:720px}.table th,.table td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--border);font-size:12px}.table th{color:var(--muted);font-weight:700}.positive{color:#0f766e;font-weight:700}.negative{color:#dc2626;font-weight:700}
+.statement-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.statement-actions .btn{font-size:11px;padding:9px 11px}
 .searchbar{display:flex;gap:8px;margin-bottom:10px}.searchbar input{flex:1;padding:11px 13px;border:1px solid var(--border);border-radius:11px}
 .hidden{display:none!important}.empty{text-align:center;padding:30px;color:var(--muted);font-size:13px}.summaryclick{border:1px solid var(--border);text-align:left;cursor:pointer;width:100%;color:inherit;transition:.15s}.summaryclick:hover{transform:translateY(-1px);box-shadow:var(--shadow)}.summaryclick:active{transform:translateY(0)}.txsummary{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}.summarybox{padding:16px}.summarytitle{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.summarytitle h3{margin:0;font-size:15px}.summarytag{font-size:10px;padding:5px 8px;border-radius:99px;background:#eef5f5;color:#0f766e;font-weight:700}.summarygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.summaryitem{padding:11px;background:#f7fafb;border-radius:11px}.summaryitem span{display:block;font-size:11px;color:var(--muted)}.summaryitem strong{display:block;font-size:17px;margin-top:4px}
 
@@ -346,7 +347,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
 
     <div class="card panel">
       <div class="searchbar"><input id="txSearch" placeholder="Search buyer/location/type..." autocomplete="off"></div>
-      <div class="tablewrap"><table class="table"><thead><tr><th>Date</th><th>Type</th><th>Location</th><th>Qty</th><th>Rate/1000</th><th>Total</th><th>Buyer</th><th>Status</th><th></th></tr></thead><tbody id="txBody"></tbody></table></div>
+      <div class="tablewrap"><table class="table"><thead><tr><th>Date</th><th>Type</th><th>Location</th><th>Qty</th><th>Rate/1000</th><th>Total</th><th>Customer/Supplier</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead><tbody id="txBody"></tbody></table></div>
     </div>
   </section>
 
@@ -385,7 +386,8 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
    <div class="field"><label for="fQty">Quantity (bricks)</label><input id="fQty" type="number" inputmode="decimal" min="0.001" step="0.001" required></div>
    <div class="field"><label for="fRate">Rate per 1000 (৳)</label><input id="fRate" type="number" inputmode="decimal" min="0" step="0.01" required></div>
    <div class="field"><label id="extraLabel" for="fExtra">Extra cost (৳)</label><input id="fExtra" type="number" inputmode="decimal" min="0" step="0.01" value="0"></div>
-   <div class="field"><label id="buyerLabel" for="fBuyer">Buyer information</label><input id="fBuyer" placeholder="Name / phone / note" autocomplete="off"></div>
+   <div class="field"><label id="buyerLabel" for="fBuyer">Buyer information</label><input id="fBuyer" placeholder="Name / note" autocomplete="off"></div>
+   <div class="field"><label id="phoneLabel" for="fPhone">Phone number</label><input id="fPhone" type="tel" inputmode="tel" placeholder="01XXXXXXXXX" autocomplete="tel"></div>
    <div class="field" id="statusWrap"><label for="fStatus">Payment status</label><select id="fStatus"><option>Paid</option><option>Due</option><option>Partial</option></select></div>
    <div class="field full"><button class="btn primary" type="submit" id="saveBtn">Save transaction</button></div>
   </form>
@@ -531,12 +533,8 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
   var cloudReady = false;
   var firebaseSaveTimer = null;
 
-  var DEFAULT_LOCATIONS = [
-    "Chowrasta Mor",
-    "Mannan Kaka's Place",
-    "Sohag Kaka's Place",
-    "Bhatta"
-  ];
+  // New accounts start with one location only. Existing Firebase data keeps its own locations.
+  var DEFAULT_LOCATIONS = ["Brick Field"];
 
   /* ------------------------------------------------------------------
      State
@@ -575,6 +573,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       rate: num(raw.rate),
       extra: num(raw.extra),
       buyer: String(raw.buyer == null ? "" : raw.buyer),
+      phone: String(raw.phone == null ? "" : raw.phone),
       status: raw.status ? String(raw.status) : "Paid"
     };
   }
@@ -610,7 +609,9 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     } catch (e) {}
     try {
       var rawLoc = storage.get(KEY_LOC);
-      if (rawLoc) {
+      // Only migrate legacy locations when there is actual legacy transaction data.
+      // A brand-new account/browser should start clean with the single Brick Field location.
+      if (transactions.length && rawLoc) {
         var parsedLoc = JSON.parse(rawLoc);
         if (Array.isArray(parsedLoc) && parsedLoc.length) locations = parsedLoc;
       }
@@ -971,6 +972,9 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
         '<div class="qty">' + qty(x.buy - x.sell) + '</div>' +
         '<div class="muted">remaining</div>' +
         '<span class="pill">Sold: ' + qty(x.sell) + '</span>' +
+        '<div class="statement-actions" style="margin-top:10px">' +
+          '<button class="btn ghost" type="button" data-action="location-statement" data-location="' + escapeHtml(l) + '">⬇️ Statement</button>' +
+        '</div>' +
       '</div>';
     }).join("");
   }
@@ -1047,12 +1051,12 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     var rows = db.transactions.filter(function (t) {
       if (q === "purchase" || q === "sale") return t.type === q;
       if (!q) return true;
-      var hay = (t.location + " " + t.type + " " + (t.buyer || "") + " " + (t.status || "")).toLowerCase();
+      var hay = (t.location + " " + t.type + " " + (t.buyer || "") + " " + (t.phone || "") + " " + (t.status || "")).toLowerCase();
       return hay.indexOf(q) !== -1;
     }).slice().reverse();
 
     if (!rows.length) {
-      $("txBody").innerHTML = '<tr><td colspan="9" class="empty">No transactions yet.</td></tr>';
+      $("txBody").innerHTML = '<tr><td colspan="10" class="empty">No transactions yet.</td></tr>';
       return;
     }
 
@@ -1066,8 +1070,10 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
         '<td>' + money(t.rate) + '</td>' +
         '<td>' + money(total) + '</td>' +
         '<td>' + (t.buyer ? escapeHtml(t.buyer) : "—") + '</td>' +
+        '<td>' + (t.phone ? escapeHtml(t.phone) : "—") + '</td>' +
         '<td>' + (t.type === "sale" ? escapeHtml(t.status || "—") : "—") + '</td>' +
         '<td style="white-space:nowrap">' +
+          '<button class="btn ghost" type="button" style="padding:6px 8px" data-action="invoice-tx" data-id="' + escapeHtml(t.id) + '" aria-label="Invoice">🧾</button> ' +
           '<button class="btn ghost" type="button" style="padding:6px 8px" data-action="edit-tx" data-id="' + escapeHtml(t.id) + '" aria-label="Edit">✎</button> ' +
           '<button class="btn danger" type="button" style="padding:6px 8px" data-action="del-tx" data-id="' + escapeHtml(t.id) + '" aria-label="Delete">✕</button>' +
         '</td></tr>';
@@ -1099,6 +1105,9 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
           '<div class="mini"><span class="muted">Remaining</span><strong>' + qty(remaining) + '</strong></div>' +
         '</div>' +
         '<div class="muted" style="margin-top:10px">Average cost/1000: <b>' + money(x.avg) + '</b> · Stock cost: <b>' + money(stockCost) + '</b></div>' +
+        '<div class="statement-actions">' +
+          '<button class="btn ghost" type="button" data-action="location-statement" data-location="' + escapeHtml(l) + '">⬇️ Download Statement</button>' +
+        '</div>' +
       '</div>';
     }).join("");
   }
@@ -1146,6 +1155,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     $("fRate").value = editing ? transaction.rate : "";
     $("fExtra").value = editing ? num(transaction.extra) : 0;
     $("fBuyer").value = editing ? (transaction.buyer || "") : "";
+    $("fPhone").value = editing ? (transaction.phone || "") : "";
     $("fStatus").value = editing ? (transaction.status || "Paid") : "Paid";
 
     var locSelect = $("fLocation");
@@ -1168,6 +1178,8 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     $("saveBtn").textContent = editing ? "Update transaction" : "Save transaction";
     $("extraLabel").textContent = type === "purchase" ? "Extra purchase cost (৳)" : "Extra sale cost (৳)";
     $("buyerLabel").textContent = type === "purchase" ? "Supplier / note" : "Buyer information";
+    $("phoneLabel").textContent = type === "purchase" ? "Supplier phone number" : "Buyer phone number";
+    $("fPhone").placeholder = type === "purchase" ? "Supplier phone" : "Customer phone";
     $("statusWrap").classList.toggle("hidden", type === "purchase");
 
     setTimeout(function () {
@@ -1247,6 +1259,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       rate: r,
       extra: ex,
       buyer: $("fBuyer").value.trim(),
+      phone: $("fPhone").value.trim(),
       status: $("fStatus").value
     });
 
@@ -1274,6 +1287,85 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     renderTx();
     if (input.focus) input.focus();
     toast(type === "purchase" ? "Showing all purchase transactions" : "Showing all sell transactions");
+  }
+
+  /* ------------------------------------------------------------------
+     Invoice & location statement downloads
+  ------------------------------------------------------------------ */
+  function findTx(id) {
+    for (var i = 0; i < db.transactions.length; i++) {
+      if (String(db.transactions[i].id) === String(id)) return db.transactions[i];
+    }
+    return null;
+  }
+
+  function printDocument(title, bodyHtml) {
+    // Open the print document directly from the user's button click so normal
+    // browser popup protection is much less likely to block it.
+    var w = window.open("about:blank", "brickManagerPrint", "width=900,height=700,scrollbars=yes,resizable=yes");
+    if (!w || w.closed) {
+      toast("Pop-up blocked. Please allow pop-ups for this site, then click Print again.");
+      return;
+    }
+    var html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>' + escapeHtml(title) + '</title><style>' +
+      'body{font-family:Arial,Helvetica,sans-serif;color:#172033;padding:28px;max-width:900px;margin:auto}' +
+      'h1{margin:0 0 4px;color:#0f766e;font-size:28px}h2{margin:22px 0 8px;font-size:18px}' +
+      '.muted{color:#667085;font-size:12px}.head{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #0f766e;padding-bottom:14px}' +
+      '.box{border:1px solid #dfe5eb;border-radius:10px;padding:14px;margin-top:16px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee}.row:last-child{border-bottom:0}' +
+      'table{width:100%;border-collapse:collapse;margin-top:14px}th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left;font-size:12px}th{background:#f3f7f7}.total{font-size:18px;font-weight:800;text-align:right;margin-top:14px}' +
+      '.printbar{position:sticky;top:0;display:flex;gap:8px;justify-content:flex-end;padding:10px 0 14px;background:#fff;z-index:5}.printbtn,.closebtn{border:0;padding:10px 14px;border-radius:8px;font-weight:700;cursor:pointer}.printbtn{background:#0f766e;color:#fff}.closebtn{background:#eef2f3;color:#172033}@media print{.printbar{display:none}body{padding:0}.head{break-inside:avoid}table{break-inside:auto}tr{break-inside:avoid;break-after:auto}}' +
+      '</style></head><body>' +
+      '<div class="printbar"><button class="closebtn" onclick="window.close()">Close</button><button class="printbtn" onclick="window.print()">🖨️ Print / Save PDF</button></div>' +
+      bodyHtml + '</body></html>';
+    try {
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      toast("Document opened in a new window");
+    } catch (e) {
+      toast("Could not open the print window");
+    }
+  }
+
+  function downloadInvoice(id) {
+    var t = findTx(id);
+    if (!t) { toast("Transaction not found"); return; }
+    var total = (num(t.qty) * num(t.rate)) / 1000 + num(t.extra);
+    var typeName = t.type === "purchase" ? "PURCHASE INVOICE" : "SALES INVOICE";
+    var partyLabel = t.type === "purchase" ? "Supplier" : "Customer";
+    var phoneLabel = t.type === "purchase" ? "Supplier phone" : "Customer phone";
+    var body = '<div class="head"><div><h1>Brick Manager</h1><div class="muted">' + typeName + '</div></div>' +
+      '<div class="muted"><b>Date:</b> ' + escapeHtml(t.date) + '<br><b>Location:</b> ' + escapeHtml(t.location) + '</div></div>' +
+      '<div class="box"><div class="grid"><div><b>' + partyLabel + '</b><br>' + escapeHtml(t.buyer || "—") + '</div>' +
+      '<div><b>' + phoneLabel + '</b><br>' + escapeHtml(t.phone || "—") + '</div></div></div>' +
+      '<table><thead><tr><th>Description</th><th>Quantity</th><th>Rate / 1000</th><th>Amount</th></tr></thead><tbody>' +
+      '<tr><td>Bricks</td><td>' + qty(t.qty) + '</td><td>' + money(t.rate) + '</td><td>' + money((num(t.qty)*num(t.rate))/1000) + '</td></tr>' +
+      (num(t.extra) ? '<tr><td colspan="3">Extra cost</td><td>' + money(t.extra) + '</td></tr>' : '') +
+      '</tbody></table><div class="total">Total: ' + money(total) + '</div>' +
+      '<div class="muted" style="margin-top:24px">Payment status: ' + escapeHtml(t.status || "Paid") + '</div>';
+    printDocument(typeName, body);
+  }
+
+  function downloadLocationStatement(location) {
+    var txs = db.transactions.filter(function(t){ return t.location === location; }).slice().sort(function(a,b){ return String(a.date).localeCompare(String(b.date)); });
+    var purchases = txs.filter(function(t){return t.type === "purchase";});
+    var sales = txs.filter(function(t){return t.type === "sale";});
+    var purchaseQty = purchases.reduce(function(a,t){return a+num(t.qty);},0);
+    var saleQty = sales.reduce(function(a,t){return a+num(t.qty);},0);
+    var purchaseTotal = purchases.reduce(function(a,t){return a+(num(t.qty)*num(t.rate))/1000+num(t.extra);},0);
+    var salesTotal = sales.reduce(function(a,t){return a+(num(t.qty)*num(t.rate))/1000+num(t.extra);},0);
+    var rows = txs.map(function(t){
+      var total=(num(t.qty)*num(t.rate))/1000+num(t.extra);
+      return '<tr><td>'+escapeHtml(t.date)+'</td><td>'+ (t.type==='purchase'?'Purchase':'Sale') +'</td><td>'+qty(t.qty)+'</td><td>'+money(t.rate)+'</td><td>'+escapeHtml(t.buyer||'—')+'</td><td>'+escapeHtml(t.phone||'—')+'</td><td>'+money(total)+'</td></tr>';
+    }).join('');
+    if(!rows) rows='<tr><td colspan="7">No transactions for this location.</td></tr>';
+    var body='<div class="head"><div><h1>Brick Manager</h1><div class="muted">LOCATION STATEMENT</div></div><div class="muted"><b>Location:</b> '+escapeHtml(location)+'<br><b>Generated:</b> '+escapeHtml(todayISO())+'</div></div>'+
+      '<div class="box"><div class="grid"><div><b>Purchases</b><br>'+purchases.length+' transactions · '+qty(purchaseQty)+' bricks · '+money(purchaseTotal)+'</div><div><b>Sales</b><br>'+sales.length+' transactions · '+qty(saleQty)+' bricks · '+money(salesTotal)+'</div></div></div>'+
+      '<table><thead><tr><th>Date</th><th>Type</th><th>Qty</th><th>Rate/1000</th><th>Customer/Supplier</th><th>Phone</th><th>Total</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<div class="total">Net sales value: '+money(salesTotal)+'</div>';
+    printDocument(location + " Statement", body);
   }
 
   /* ------------------------------------------------------------------
@@ -1493,6 +1585,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       case "new-purchase": openTx("purchase", null); break;
       case "new-sale": openTx("sale", null); break;
       case "edit-tx": editTx(el.getAttribute("data-id")); break;
+      case "invoice-tx": downloadInvoice(el.getAttribute("data-id")); break;
       case "del-tx": delTx(el.getAttribute("data-id")); break;
       case "filter-tx": filterTxType(el.getAttribute("data-type")); break;
       case "close-modal": closeModal(); break;
@@ -1502,6 +1595,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       case "rename-location": renameLocation(Number(el.getAttribute("data-index"))); break;
       case "remove-location": removeLocation(Number(el.getAttribute("data-index"))); break;
       case "quick-del-loc": removeLocationByName(el.getAttribute("data-loc")); break;
+      case "location-statement": downloadLocationStatement(el.getAttribute("data-location")); break;
       case "open-backup": openBackup(); break;
       case "close-backup": closeBackup(); break;
       case "firebase-signout": firebaseSignOut(); break;
