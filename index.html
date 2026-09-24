@@ -1486,31 +1486,41 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     }
 
     function doPrint() {
-      var oldTitle = document.title;
-      document.body.classList.add("print-documenting");
-      document.title = title || "Brick Manager Document";
-      var cleaned = false;
-      function cleanup() {
-        if (cleaned) return;
-        cleaned = true;
-        document.body.classList.remove("print-documenting");
-        document.title = oldTitle;
-        window.removeEventListener("afterprint", cleanup);
-      }
-      window.addEventListener("afterprint", cleanup);
+      // Printing is handled by a tiny dedicated print page. This prevents
+      // Android/WebView wrappers from opening the whole Brick Manager app in Chrome.
       try {
-        if (typeof window.print === "function") {
-          window.print();
-          // Some Android WebView/PWA modes expose window.print but do nothing.
-          // The user can still use Save PDF, which is independent of the print API.
-          setTimeout(function(){
-            if (document.body.classList.contains("print-documenting")) cleanup();
-          }, 15000);
-          return;
-        }
+        var payload = {
+          title: title || "Brick Manager Document",
+          bodyHtml: bodyHtml,
+          createdAt: Date.now()
+        };
+        localStorage.setItem("brickManagerPrintPayload", JSON.stringify(payload));
+      } catch (e) {
+        toast("Could not prepare the print document.");
+        return;
+      }
+
+      var printUrl;
+      try {
+        var encoded = encodeURIComponent(JSON.stringify({title:title || "Brick Manager Document", bodyHtml:bodyHtml}));
+        printUrl = new URL("print.html?document=" + encoded, window.location.href).href;
+      } catch (e) {
+        printUrl = "print.html";
+      }
+
+      // Open ONLY the print page. The document is carried in the URL so that
+      // it also works when HopWeb hands the print page to external Chrome;
+      // no Firebase login or app storage is needed on the print page.
+      var printWindow = null;
+      try {
+        printWindow = window.open(printUrl, "BrickManagerPrint");
       } catch (e) {}
-      cleanup();
-      toast("Printing is not available in this app mode. Use Save PDF.");
+
+      if (!printWindow) {
+        // Popup blocked: navigate this tab to the dedicated print page.
+        // The document is stored locally, so the page can render it immediately.
+        window.location.href = printUrl;
+      }
     }
 
     var closeBtn = document.getElementById("docPreviewClose");
