@@ -77,7 +77,7 @@ button,input,select{font:inherit;color:inherit}button{cursor:pointer}
 .modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;gap:10px}.modalhead h2{margin:0;font-size:18px}.close{border:0;background:#eef2f4;border-radius:10px;width:36px;height:36px;flex:0 0 auto}
 .toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(20px);background:#17212b;color:#fff;padding:11px 16px;border-radius:12px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:30;max-width:88vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.kpirow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mini{padding:15px}.mini strong{display:block;font-size:19px;margin-top:5px}
+.kpirow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;min-width:0}.mini{padding:15px;min-width:0;overflow:hidden}.mini strong{display:block;font-size:19px;margin-top:5px}
 @media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.locations{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.bizgrid{grid-template-columns:1fr}.bizitem strong{font-size:18px}}
 @media(max-width:520px){.container{padding:14px}.top{padding:18px 15px 23px}.grid{gap:10px}.stat{min-height:112px;padding:14px}.stat .value{font-size:21px}.locations{gap:9px}.actions{gap:9px}.formgrid{grid-template-columns:1fr}.kpirow{grid-template-columns:1fr 1fr 1fr}.bottom{padding-top:7px}.txsummary{grid-template-columns:1fr}.summaryitem strong{font-size:15px}}
@@ -202,6 +202,24 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
 .authfield{margin-bottom:13px}.authfield label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px}.authinputwrap{position:relative}.authinput{width:100%;padding:13px 44px 13px 13px;border:1px solid #e2e8f0;border-radius:12px;outline:none;background:#fff}.authinput:focus{border-color:#14b8a6;box-shadow:0 0 0 3px rgba(20,184,166,.10)}.authshow{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:#f1f5f9;color:#64748b;border-radius:8px;padding:6px 8px;font-size:11px}.authsubmit{width:100%;border:0;border-radius:12px;padding:13px;background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;font-weight:800;font-size:14px;box-shadow:0 10px 22px rgba(15,118,110,.22)}.authsubmit:disabled{opacity:.65;cursor:not-allowed}.authforgot{border:0;background:none;color:#0f766e;font-size:12px;font-weight:700;padding:8px 0;display:block;margin-left:auto}.authmsg{min-height:20px;margin:8px 0 2px;font-size:12px;text-align:center;color:#dc2626}.authfoot{margin-top:14px;text-align:center;font-size:11px;color:#94a3b8;line-height:1.5}.authloading{position:fixed;inset:0;z-index:110;background:#f5f7fb;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:#475569}.spinner{width:34px;height:34px;border:3px solid #dbe7e5;border-top-color:#0f766e;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ---------- In-app invoice / statement preview ---------- */
+/* ---------- Mobile report cards ---------- */
+.kpirow .mini{min-width:0;max-width:100%;}
+.kpirow .mini span,.kpirow .mini strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.report-location-card{overflow:hidden;}
+.report-location-card .sectionhead{min-width:0;}
+.report-location-card .sectionhead h2{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.report-location-card .statement-actions{margin-top:14px;}
+@media(max-width:520px){
+  .kpirow{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;}
+  .kpirow .mini{padding:11px 8px;border-radius:14px;}
+  .kpirow .mini strong{font-size:17px;letter-spacing:-.4px;}
+  .kpirow .mini .muted{font-size:10px;}
+  .report-location-card{padding:13px!important;border-radius:20px;}
+  .report-location-card .sectionhead{gap:7px;}
+  .report-location-card .pill{font-size:10px;padding:5px 8px;white-space:nowrap;}
+  .report-location-card .statement-actions .btn{width:100%;justify-content:center;padding:11px 12px;}
+}
+
 .doc-preview-overlay{position:fixed;inset:0;background:rgba(15,23,42,.58);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}
 .doc-preview-box{width:min(980px,100%);height:min(92vh,900px);background:#fff;border-radius:20px;box-shadow:0 24px 70px rgba(15,23,42,.25);display:flex;flex-direction:column;overflow:hidden}
 .doc-preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid #e6ebf2;background:#fff;flex:0 0 auto}
@@ -1154,7 +1172,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       var remaining = Math.max(0, x.buy - x.sell);
       var stockCost = (remaining * x.avg) / 1000;
       var costOfSold = (x.sell * x.avg) / 1000;
-      return '<div class="card panel section" style="margin-top:12px">' +
+      return '<div class="card panel section report-location-card" style="margin-top:12px">' +
         '<div class="sectionhead"><h2 style="font-size:15px">' + escapeHtml(l) + '</h2>' +
         '<span class="pill">Profit: ' + money(x.profit) + '</span></div>' +
         '<div class="kpirow">' +
@@ -1410,16 +1428,26 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     var printBtn = document.getElementById("docPreviewPrint");
     if (closeBtn) closeBtn.addEventListener("click", closePreview);
     if (printBtn) printBtn.addEventListener("click", function () {
-      document.body.classList.add("print-documenting");
       var oldTitle = document.title;
+      document.body.classList.add("print-documenting");
       document.title = title || "Brick Manager Document";
-      setTimeout(function () {
+
+      // IMPORTANT: call window.print() directly from the button click.
+      // On Android Chrome, delaying window.print() with setTimeout can lose
+      // the user gesture and the print dialog may never open.
+      var cleanup = function () {
+        document.body.classList.remove("print-documenting");
+        document.title = oldTitle;
+        window.removeEventListener("afterprint", cleanup);
+      };
+      window.addEventListener("afterprint", cleanup);
+
+      try {
         window.print();
-        setTimeout(function () {
-          document.body.classList.remove("print-documenting");
-          document.title = oldTitle;
-        }, 300);
-      }, 50);
+      } catch (err) {
+        cleanup();
+        toast("Print could not be started. Please use Chrome browser.");
+      }
     });
 
     overlay.addEventListener("click", function (e) {
