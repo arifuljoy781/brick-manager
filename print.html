@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Brick Manager — Print</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#fff;color:#17212b;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  body{padding:22px}
+  .toolbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;margin:-22px -22px 22px;background:#fff;border-bottom:1px solid #e5e7eb;box-shadow:0 3px 14px rgba(15,23,42,.06)}
+  .brand{font-weight:800;color:#0f766e;font-size:14px}
+  .actions{display:flex;gap:8px}
+  button{border:0;border-radius:9px;padding:9px 13px;font-weight:700;cursor:pointer;font-size:12px}
+  .print{background:#0f766e;color:#fff}.back{background:#eef2f3;color:#172033}
+  .document{max-width:1000px;margin:0 auto;background:#fff}
+  .document h1{margin:0 0 4px;color:#0f766e;font-size:28px}
+  .document .muted{color:#667085;font-size:12px}
+  .document .head{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #0f766e;padding-bottom:14px}
+  .document .box{border:1px solid #dfe5eb;border-radius:10px;padding:14px;margin-top:16px}
+  .document .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .document .row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee}
+  .document .row:last-child{border-bottom:0}
+  .document table{width:100%;border-collapse:collapse;margin-top:14px}
+  .document th,.document td{padding:9px;border:1px solid #ddd;text-align:left;font-size:12px}
+  .document th{background:#f3f7f7}
+  .document .total{font-size:18px;font-weight:800;text-align:right;margin-top:14px}
+  .error{max-width:700px;margin:70px auto;padding:24px;border:1px solid #fecaca;background:#fff7f7;border-radius:14px;color:#991b1b;text-align:center}
+  @media(max-width:600px){body{padding:15px}.toolbar{margin:-15px -15px 15px}.actions{gap:6px}.actions button{padding:8px 10px}.document .grid{grid-template-columns:1fr}.document .head{display:block}.document .head>div:last-child{margin-top:10px}.document th,.document td{padding:6px;font-size:10px}.document h1{font-size:24px}}
+  @media print{
+    @page{size:A4;margin:8mm}
+    body{padding:0}
+    .toolbar{display:none!important}
+    .document{max-width:none}
+    .error{border:0;background:#fff;color:#17212b;margin:0;padding:0}
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <div class="brand">🧱 Brick Manager — Print</div>
+  <div class="actions">
+    <button class="back" type="button" onclick="goBack()">← Back to app</button>
+    <button class="print" type="button" onclick="printNow()">🖨️ Print / Save PDF</button>
+  </div>
+</div>
+<div id="document" class="document"></div>
+<script>
+(function(){
+  var root=document.getElementById("document");
+  var params=new URLSearchParams(window.location.search);
+  var encoded=params.get("document");
+  var raw=null;
+  if(encoded){
+    try{raw=decodeURIComponent(encoded)}catch(e){raw=null}
+  }
+  // Backward-compatible fallback for same-origin tabs that still have the old payload.
+  if(!raw){try{raw=localStorage.getItem("brickManagerPrintPayload")}catch(e){}}
+  if(!raw){
+    root.innerHTML='<div class="error"><h2>Print document not found</h2><p>Please return to Brick Manager and press Print again.</p></div>';
+    return;
+  }
+  try{
+    var data=JSON.parse(raw);
+    if(!data || !data.bodyHtml){throw new Error("Invalid print data")}
+    root.innerHTML=data.bodyHtml;
+    if(data.title) document.title=data.title+" — Brick Manager";
+    try{localStorage.removeItem("brickManagerPrintPayload")}catch(e){}
+    // Automatically show the system print dialog after the document is ready.
+    setTimeout(function(){printNow()}, 450);
+  }catch(e){
+    root.innerHTML='<div class="error"><h2>Could not load print document</h2><p>Please return to Brick Manager and try Print again.</p></div>';
+  }
+  window.printNow=function(){
+    if(typeof window.print==='function') window.print();
+    else alert('Printing is not available in this browser. Use your browser\'s Print or Save as PDF option.');
+  };
+  window.goBack=function(){
+    if(history.length>1){history.back();return;}
+    window.location.href="./";
+  };
+})();
+</script>
+</body>
+</html>
