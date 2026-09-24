@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Brick Business Manager</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
@@ -226,7 +228,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
 .doc-preview-toolbar .doc-title{font-weight:800;font-size:14px;color:#172033;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .doc-preview-actions{display:flex;gap:8px;flex:0 0 auto}
 .doc-preview-actions button{border:0;border-radius:9px;padding:9px 13px;font-weight:700;font-size:12px;cursor:pointer}
-.doc-preview-print{background:#0f766e;color:#fff}.doc-preview-close{background:#eef2f3;color:#172033}
+.doc-preview-print{background:#0f766e;color:#fff}.doc-preview-pdf{background:#2563eb;color:#fff}.doc-preview-close{background:#eef2f3;color:#172033}
 .doc-preview-content{overflow:auto;padding:28px;flex:1;background:#fff}
 .doc-preview-content h1{margin:0 0 4px;color:#0f766e;font-size:28px}.doc-preview-content h2{margin:22px 0 8px;font-size:18px}
 .doc-preview-content .muted{color:#667085;font-size:12px}.doc-preview-content .head{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #0f766e;padding-bottom:14px}
@@ -234,7 +236,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
 .doc-preview-content .row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee}.doc-preview-content .row:last-child{border-bottom:0}
 .doc-preview-content table{width:100%;border-collapse:collapse;margin-top:14px}.doc-preview-content th,.doc-preview-content td{padding:9px;border:1px solid #ddd;text-align:left;font-size:12px}.doc-preview-content th{background:#f3f7f7}
 .doc-preview-content .total{font-size:18px;font-weight:800;text-align:right;margin-top:14px}
-@media(max-width:600px){.doc-preview-overlay{padding:0}.doc-preview-box{height:100vh;border-radius:0}.doc-preview-content{padding:15px}.doc-preview-content .grid{grid-template-columns:1fr}.doc-preview-content .head{display:block}.doc-preview-content .head>div:last-child{margin-top:10px}.doc-preview-content th,.doc-preview-content td{padding:6px;font-size:10px}}
+@media(max-width:600px){.doc-preview-actions{flex-wrap:wrap}.doc-preview-actions button{padding:8px 10px}.doc-preview-overlay{padding:0}.doc-preview-box{height:100vh;border-radius:0}.doc-preview-content{padding:15px}.doc-preview-content .grid{grid-template-columns:1fr}.doc-preview-content .head{display:block}.doc-preview-content .head>div:last-child{margin-top:10px}.doc-preview-content th,.doc-preview-content td{padding:6px;font-size:10px}}
 @media print{
   body.print-documenting > *:not(#docPrintOverlay){display:none!important}
   body.print-documenting{margin:0!important;padding:0!important;background:#fff!important}
@@ -1393,9 +1395,6 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
   }
 
   function printDocument(title, bodyHtml) {
-    // Keep invoices/statements inside the current app. Do not use window.open(),
-    // which can launch a new Chrome tab/window when the app is installed or
-    // opened as a standalone web app.
     var old = document.getElementById("docPrintOverlay");
     if (old) old.remove();
 
@@ -1408,14 +1407,14 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
           '<div class="doc-title">' + escapeHtml(title || "Brick Manager Document") + '</div>' +
           '<div class="doc-preview-actions">' +
             '<button type="button" class="doc-preview-close" id="docPreviewClose">Close</button>' +
-            '<button type="button" class="doc-preview-print" id="docPreviewPrint">🖨️ Print / Save PDF</button>' +
+            '<button type="button" class="doc-preview-print" id="docPreviewPrint">🖨️ Print</button>' +
+            '<button type="button" class="doc-preview-pdf" id="docPreviewPdf">📄 Save PDF</button>' +
           '</div>' +
         '</div>' +
         '<div class="doc-preview-content" id="docPreviewContent">' + bodyHtml + '</div>' +
       '</div>';
 
     document.body.appendChild(overlay);
-    document.body.classList.remove("print-documenting");
 
     function closePreview() {
       document.body.classList.remove("print-documenting");
@@ -1424,39 +1423,114 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       document.title = "Brick Business Manager";
     }
 
-    var closeBtn = document.getElementById("docPreviewClose");
-    var printBtn = document.getElementById("docPreviewPrint");
-    if (closeBtn) closeBtn.addEventListener("click", closePreview);
-    if (printBtn) printBtn.addEventListener("click", function () {
+    function setBusy(button, busy, text) {
+      if (!button) return;
+      button.disabled = busy;
+      button.style.opacity = busy ? ".65" : "1";
+      button.textContent = busy ? text : (button.id === "docPreviewPdf" ? "📄 Save PDF" : "🖨️ Print");
+    }
+
+    async function savePdf() {
+      var pdfBtn = document.getElementById("docPreviewPdf");
+      var content = document.getElementById("docPreviewContent");
+      if (!content) return;
+      if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
+        toast("PDF engine is still loading. Please tap Save PDF again.");
+        return;
+      }
+      setBusy(pdfBtn, true, "Creating PDF…");
+      try {
+        var canvas = await window.html2canvas(content, {
+          scale: Math.min(2, window.devicePixelRatio || 1.5),
+          backgroundColor: "#ffffff",
+          useCORS: true,
+          logging: false,
+          scrollX: 0,
+          scrollY: -window.scrollY
+        });
+        var jsPDF = window.jspdf.jsPDF;
+        var pdf = new jsPDF({orientation:"p", unit:"mm", format:"a4", compress:true});
+        var pageW = 210, pageH = 297;
+        var margin = 8;
+        var usableW = pageW - margin * 2;
+        var imgW = usableW;
+        var imgH = canvas.height * imgW / canvas.width;
+        var pageContentH = pageH - margin * 2;
+        var pixelsPerPage = Math.floor(canvas.width * pageContentH / imgW);
+        var offsetY = 0;
+        var page = 0;
+        while (offsetY < canvas.height) {
+          var sliceH = Math.min(pixelsPerPage, canvas.height - offsetY);
+          var slice = document.createElement("canvas");
+          slice.width = canvas.width;
+          slice.height = sliceH;
+          var ctx = slice.getContext("2d");
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0,0,slice.width,slice.height);
+          ctx.drawImage(canvas, 0, offsetY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+          var sliceHmm = sliceH * imgW / canvas.width;
+          if (page > 0) pdf.addPage();
+          pdf.addImage(slice.toDataURL("image/jpeg", 0.92), "JPEG", margin, margin, imgW, sliceHmm, undefined, "FAST");
+          offsetY += sliceH;
+          page++;
+        }
+        var safeName = String(title || "Brick Manager Document").replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "") || "Brick_Manager_Document";
+        pdf.save(safeName + ".pdf");
+        toast("PDF saved successfully");
+      } catch (err) {
+        console.error(err);
+        toast("Could not create PDF. Please try again.");
+      } finally {
+        setBusy(pdfBtn, false);
+      }
+    }
+
+    function doPrint() {
       var oldTitle = document.title;
       document.body.classList.add("print-documenting");
       document.title = title || "Brick Manager Document";
-
-      // IMPORTANT: call window.print() directly from the button click.
-      // On Android Chrome, delaying window.print() with setTimeout can lose
-      // the user gesture and the print dialog may never open.
-      var cleanup = function () {
+      var cleaned = false;
+      function cleanup() {
+        if (cleaned) return;
+        cleaned = true;
         document.body.classList.remove("print-documenting");
         document.title = oldTitle;
         window.removeEventListener("afterprint", cleanup);
-      };
-      window.addEventListener("afterprint", cleanup);
-
-      try {
-        window.print();
-      } catch (err) {
-        cleanup();
-        toast("Print could not be started. Please use Chrome browser.");
       }
+      window.addEventListener("afterprint", cleanup);
+      try {
+        if (typeof window.print === "function") {
+          window.print();
+          // Some Android WebView/PWA modes expose window.print but do nothing.
+          // The user can still use Save PDF, which is independent of the print API.
+          setTimeout(function(){
+            if (document.body.classList.contains("print-documenting")) cleanup();
+          }, 15000);
+          return;
+        }
+      } catch (e) {}
+      cleanup();
+      toast("Printing is not available in this app mode. Use Save PDF.");
+    }
+
+    var closeBtn = document.getElementById("docPreviewClose");
+    var printBtn = document.getElementById("docPreviewPrint");
+    var pdfBtn = document.getElementById("docPreviewPdf");
+    if (closeBtn) closeBtn.addEventListener("click", closePreview);
+    if (printBtn) printBtn.addEventListener("click", function(e){
+      if(e) e.preventDefault();
+      doPrint();
+    });
+    if (pdfBtn) pdfBtn.addEventListener("click", function(e){
+      if(e) e.preventDefault();
+      savePdf();
     });
 
-    overlay.addEventListener("click", function (e) {
-      if (e.target === overlay) closePreview();
+    overlay.addEventListener("click", function(e){
+      if(e.target === overlay) closePreview();
     });
-
-    // Esc closes the in-app document viewer.
-    overlay._keyHandler = function (e) {
-      if (e.key === "Escape") {
+    overlay._keyHandler = function(e){
+      if(e.key === "Escape"){
         document.removeEventListener("keydown", overlay._keyHandler);
         closePreview();
       }
