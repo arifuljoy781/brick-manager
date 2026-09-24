@@ -200,6 +200,31 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
 .authbrand h1{margin:0;font-size:25px;color:#172033}.authbrand p{margin:6px 0 0;color:#718096;font-size:13px}
 .authswitch{display:grid;grid-template-columns:1fr 1fr;background:#f1f5f9;border-radius:12px;padding:4px;margin-bottom:18px}.authswitch button{border:0;background:transparent;border-radius:9px;padding:10px;font-weight:700;color:#64748b}.authswitch button.active{background:#fff;color:#0f766e;box-shadow:0 3px 10px rgba(15,23,42,.08)}
 .authfield{margin-bottom:13px}.authfield label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px}.authinputwrap{position:relative}.authinput{width:100%;padding:13px 44px 13px 13px;border:1px solid #e2e8f0;border-radius:12px;outline:none;background:#fff}.authinput:focus{border-color:#14b8a6;box-shadow:0 0 0 3px rgba(20,184,166,.10)}.authshow{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:#f1f5f9;color:#64748b;border-radius:8px;padding:6px 8px;font-size:11px}.authsubmit{width:100%;border:0;border-radius:12px;padding:13px;background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;font-weight:800;font-size:14px;box-shadow:0 10px 22px rgba(15,118,110,.22)}.authsubmit:disabled{opacity:.65;cursor:not-allowed}.authforgot{border:0;background:none;color:#0f766e;font-size:12px;font-weight:700;padding:8px 0;display:block;margin-left:auto}.authmsg{min-height:20px;margin:8px 0 2px;font-size:12px;text-align:center;color:#dc2626}.authfoot{margin-top:14px;text-align:center;font-size:11px;color:#94a3b8;line-height:1.5}.authloading{position:fixed;inset:0;z-index:110;background:#f5f7fb;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:#475569}.spinner{width:34px;height:34px;border:3px solid #dbe7e5;border-top-color:#0f766e;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- In-app invoice / statement preview ---------- */
+.doc-preview-overlay{position:fixed;inset:0;background:rgba(15,23,42,.58);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}
+.doc-preview-box{width:min(980px,100%);height:min(92vh,900px);background:#fff;border-radius:20px;box-shadow:0 24px 70px rgba(15,23,42,.25);display:flex;flex-direction:column;overflow:hidden}
+.doc-preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid #e6ebf2;background:#fff;flex:0 0 auto}
+.doc-preview-toolbar .doc-title{font-weight:800;font-size:14px;color:#172033;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-preview-actions{display:flex;gap:8px;flex:0 0 auto}
+.doc-preview-actions button{border:0;border-radius:9px;padding:9px 13px;font-weight:700;font-size:12px;cursor:pointer}
+.doc-preview-print{background:#0f766e;color:#fff}.doc-preview-close{background:#eef2f3;color:#172033}
+.doc-preview-content{overflow:auto;padding:28px;flex:1;background:#fff}
+.doc-preview-content h1{margin:0 0 4px;color:#0f766e;font-size:28px}.doc-preview-content h2{margin:22px 0 8px;font-size:18px}
+.doc-preview-content .muted{color:#667085;font-size:12px}.doc-preview-content .head{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #0f766e;padding-bottom:14px}
+.doc-preview-content .box{border:1px solid #dfe5eb;border-radius:10px;padding:14px;margin-top:16px}.doc-preview-content .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0}
+.doc-preview-content .row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee}.doc-preview-content .row:last-child{border-bottom:0}
+.doc-preview-content table{width:100%;border-collapse:collapse;margin-top:14px}.doc-preview-content th,.doc-preview-content td{padding:9px;border:1px solid #ddd;text-align:left;font-size:12px}.doc-preview-content th{background:#f3f7f7}
+.doc-preview-content .total{font-size:18px;font-weight:800;text-align:right;margin-top:14px}
+@media(max-width:600px){.doc-preview-overlay{padding:0}.doc-preview-box{height:100vh;border-radius:0}.doc-preview-content{padding:15px}.doc-preview-content .grid{grid-template-columns:1fr}.doc-preview-content .head{display:block}.doc-preview-content .head>div:last-child{margin-top:10px}.doc-preview-content th,.doc-preview-content td{padding:6px;font-size:10px}}
+@media print{
+  body.print-documenting > *:not(#docPrintOverlay){display:none!important}
+  body.print-documenting{margin:0!important;padding:0!important;background:#fff!important}
+  #docPrintOverlay{position:static!important;display:block!important;background:#fff!important;padding:0!important}
+  #docPrintOverlay .doc-preview-box{width:100%!important;height:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;display:block!important;overflow:visible!important}
+  #docPrintOverlay .doc-preview-toolbar{display:none!important}
+  #docPrintOverlay .doc-preview-content{overflow:visible!important;padding:0!important}
+}
 </style>
 </head>
 <body>
@@ -1350,56 +1375,65 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
   }
 
   function printDocument(title, bodyHtml) {
-    // Open synchronously from the user's click. Use a fresh tab/window so an
-    // old print window cannot interfere with the new document.
-    var w = window.open("", "_blank", "width=900,height=700,scrollbars=yes,resizable=yes");
-    if (!w || w.closed) {
-      toast("Print window was blocked. Allow pop-ups for this site and try again.");
-      return;
+    // Keep invoices/statements inside the current app. Do not use window.open(),
+    // which can launch a new Chrome tab/window when the app is installed or
+    // opened as a standalone web app.
+    var old = document.getElementById("docPrintOverlay");
+    if (old) old.remove();
+
+    var overlay = document.createElement("div");
+    overlay.id = "docPrintOverlay";
+    overlay.className = "doc-preview-overlay";
+    overlay.innerHTML =
+      '<div class="doc-preview-box" role="dialog" aria-modal="true" aria-label="' + escapeHtml(title || "Document") + '">' +
+        '<div class="doc-preview-toolbar">' +
+          '<div class="doc-title">' + escapeHtml(title || "Brick Manager Document") + '</div>' +
+          '<div class="doc-preview-actions">' +
+            '<button type="button" class="doc-preview-close" id="docPreviewClose">Close</button>' +
+            '<button type="button" class="doc-preview-print" id="docPreviewPrint">🖨️ Print / Save PDF</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="doc-preview-content" id="docPreviewContent">' + bodyHtml + '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+    document.body.classList.remove("print-documenting");
+
+    function closePreview() {
+      document.body.classList.remove("print-documenting");
+      var el = document.getElementById("docPrintOverlay");
+      if (el) el.remove();
+      document.title = "Brick Business Manager";
     }
 
-    var safeTitle = escapeHtml(title || "Brick Manager Document");
-    var html = '<!doctype html><html><head><meta charset="utf-8">' +
-      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-      '<title>' + safeTitle + '</title><style>' +
-      'html,body{margin:0;padding:0;background:#fff}' +
-      'body{font-family:Arial,Helvetica,sans-serif;color:#172033;padding:28px;max-width:900px;margin:auto}' +
-      'h1{margin:0 0 4px;color:#0f766e;font-size:28px}h2{margin:22px 0 8px;font-size:18px}' +
-      '.muted{color:#667085;font-size:12px}.head{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #0f766e;padding-bottom:14px}' +
-      '.box{border:1px solid #dfe5eb;border-radius:10px;padding:14px;margin-top:16px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}' +
-      '.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee}.row:last-child{border-bottom:0}' +
-      'table{width:100%;border-collapse:collapse;margin-top:14px}th,td{padding:9px;border:1px solid #ddd;text-align:left;font-size:12px}th{background:#f3f7f7}' +
-      '.total{font-size:18px;font-weight:800;text-align:right;margin-top:14px}' +
-      '.printbar{display:flex;gap:10px;justify-content:flex-end;padding:0 0 18px;position:sticky;top:0;background:#fff;z-index:10}' +
-      '.printbtn,.closebtn{border:0;padding:11px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px}' +
-      '.printbtn{background:#0f766e;color:#fff}.closebtn{background:#eef2f3;color:#172033}' +
-      '@media(max-width:600px){body{padding:15px}.grid{grid-template-columns:1fr}.head{display:block}.head>div:last-child{margin-top:10px}table{font-size:10px}th,td{padding:6px}}' +
-      '@media print{.printbar{display:none!important}body{padding:0;max-width:none}table{break-inside:auto}tr{break-inside:avoid;break-after:auto}.box,.head{break-inside:avoid}}' +
-      '</style></head><body>' +
-      '<div class="printbar">' +
-      '<button id="closePrint" class="closebtn" type="button">Close</button>' +
-      '<button id="printDoc" class="printbtn" type="button">🖨️ Print / Save PDF</button>' +
-      '</div>' + bodyHtml +
-      '<script>' +
-      '(function(){' +
-      'var p=document.getElementById("printDoc");' +
-      'var c=document.getElementById("closePrint");' +
-      'if(p){p.addEventListener("click",function(){window.focus();setTimeout(function(){window.print();},50);});}' +
-      'if(c){c.addEventListener("click",function(){window.close();});}' +
-      'window.addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="p"){e.preventDefault();window.print();}});' +
-      '})();' +
-      '<\/script></body></html>';
+    var closeBtn = document.getElementById("docPreviewClose");
+    var printBtn = document.getElementById("docPreviewPrint");
+    if (closeBtn) closeBtn.addEventListener("click", closePreview);
+    if (printBtn) printBtn.addEventListener("click", function () {
+      document.body.classList.add("print-documenting");
+      var oldTitle = document.title;
+      document.title = title || "Brick Manager Document";
+      setTimeout(function () {
+        window.print();
+        setTimeout(function () {
+          document.body.classList.remove("print-documenting");
+          document.title = oldTitle;
+        }, 300);
+      }, 50);
+    });
 
-    try {
-      w.document.open();
-      w.document.write(html);
-      w.document.close();
-      w.focus();
-      toast("Document opened. Click Print / Save PDF.");
-    } catch (e) {
-      try { w.close(); } catch (_) {}
-      toast("Could not create the print document: " + (e.message || "unknown error"));
-    }
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) closePreview();
+    });
+
+    // Esc closes the in-app document viewer.
+    overlay._keyHandler = function (e) {
+      if (e.key === "Escape") {
+        document.removeEventListener("keydown", overlay._keyHandler);
+        closePreview();
+      }
+    };
+    document.addEventListener("keydown", overlay._keyHandler);
   }
 
   function downloadInvoice(id) {
