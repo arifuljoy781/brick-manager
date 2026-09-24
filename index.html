@@ -1486,40 +1486,60 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     }
 
     function doPrint() {
-      // Printing is handled by a tiny dedicated print page. This prevents
-      // Android/WebView wrappers from opening the whole Brick Manager app in Chrome.
-      try {
-        var payload = {
-          title: title || "Brick Manager Document",
-          bodyHtml: bodyHtml,
-          createdAt: Date.now()
-        };
-        localStorage.setItem("brickManagerPrintPayload", JSON.stringify(payload));
-      } catch (e) {
-        toast("Could not prepare the print document.");
-        return;
-      }
+      // IMPORTANT: keep printing inside this single index.html file.
+      // Do not depend on print.html or another local file. Some Android WebView
+      // wrappers convert a relative print URL into a file:///... path and then
+      // return ERR_FILE_NOT_FOUND. A self-contained data: document avoids that.
+      var printCss = `
+        *{box-sizing:border-box}
+        html,body{margin:0;padding:0;background:#fff;color:#17212b;font-family:Arial,Helvetica,sans-serif}
+        body{padding:18px}
+        .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;margin:-18px -18px 18px;background:#f5f7fa;border-bottom:1px solid #dfe5eb}
+        .brand{font-weight:800;font-size:16px}
+        .actions{display:flex;gap:8px;flex-wrap:wrap}
+        button{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}
+        .back{background:#e7edf3;color:#17212b}
+        .print{background:#17212b;color:#fff}
+        .document{max-width:1000px;margin:0 auto}
+        .document .box{border:1px solid #dfe5eb;border-radius:10px;padding:14px;margin-top:16px}
+        .document .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+        .document .row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #eee}
+        .document .row:last-child{border-bottom:0}
+        .document table{width:100%;border-collapse:collapse;margin-top:14px}
+        .document th,.document td{padding:7px;border:1px solid #ddd;text-align:left;font-size:12px}
+        .document th{background:#f3f7f7}
+        .document .total{font-size:18px;font-weight:800;text-align:right;margin-top:14px}
+        .document h1{font-size:26px;margin:0 0 4px}
+        .document .head{display:flex;justify-content:space-between;gap:16px}
+        .document .muted{color:#66727d}
+        @media(max-width:600px){body{padding:12px}.toolbar{margin:-12px -12px 12px}.document .grid{grid-template-columns:1fr}.document .head{display:block}.document th,.document td{padding:5px;font-size:10px}.document h1{font-size:22px}}
+        @media print{
+          @page{size:A4;margin:8mm}
+          body{padding:0}
+          .toolbar{display:none!important}
+          .document{max-width:none}
+        }
+      `;
 
-      var printUrl;
-      try {
-        var encoded = encodeURIComponent(JSON.stringify({title:title || "Brick Manager Document", bodyHtml:bodyHtml}));
-        printUrl = new URL("print.html?document=" + encoded, window.location.href).href;
-      } catch (e) {
-        printUrl = "print.html";
-      }
+      var printHtml = '<!doctype html><html><head><meta charset="utf-8">' +
+        '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+        '<title>' + escapeHtml(title || "Brick Manager Document") + '</title>' +
+        '<style>' + printCss + '</style></head>' +
+        '<body onload="setTimeout(function(){try{window.focus();window.print();}catch(e){}},450)">' +
+        '<div class="toolbar"><div class="brand">🧱 Brick Manager — Print</div>' +
+        '<div class="actions"><button class="back" type="button" onclick="if(history.length>1){history.back();}else{window.close();}">← Back to app</button>' +
+        '<button class="print" type="button" onclick="window.print()">🖨️ Print / Save PDF</button></div></div>' +
+        '<div id="document" class="document">' + bodyHtml + '</div>' +
+        '</body></html>';
 
-      // Open ONLY the print page. The document is carried in the URL so that
-      // it also works when HopWeb hands the print page to external Chrome;
-      // no Firebase login or app storage is needed on the print page.
+      var dataUrl = "data:text/html;charset=utf-8," + encodeURIComponent(printHtml);
       var printWindow = null;
-      try {
-        printWindow = window.open(printUrl, "BrickManagerPrint");
-      } catch (e) {}
+      try { printWindow = window.open(dataUrl, "BrickManagerPrint"); } catch (e) {}
 
       if (!printWindow) {
-        // Popup blocked: navigate this tab to the dedicated print page.
-        // The document is stored locally, so the page can render it immediately.
-        window.location.href = printUrl;
+        // Popup blocked: open the self-contained print document in the current tab.
+        // The app is still a single index.html file; Android/browser Back returns to it.
+        window.location.href = dataUrl;
       }
     }
 
