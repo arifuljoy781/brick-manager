@@ -222,6 +222,8 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
   .report-location-card .statement-actions .btn{width:100%;justify-content:center;padding:11px 12px;}
 }
 
+.statement-selector-body{padding:16px;overflow:auto}.statement-filter-card{background:#f7fafb;border:1px solid #e6ebf2;border-radius:14px;padding:14px;margin-bottom:12px}.statement-type-select{display:block;width:100%;margin-top:8px;padding:12px;border:1px solid #dbe3ec;border-radius:11px;background:#fff;font-size:15px;font-weight:700}.statement-live-summary{padding:11px 13px;background:#eef8f7;border:1px solid #d8efec;border-radius:12px;margin-bottom:10px;font-size:12px;color:#245b58}.statement-mini-preview{background:#fff;border:1px solid #e6ebf2;border-radius:12px;padding:14px;overflow:auto}.statement-mini-preview table{min-width:760px}.statement-selector-box{height:min(92vh,900px)}
+
 .doc-preview-overlay{position:fixed;inset:0;background:rgba(15,23,42,.58);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}
 .doc-preview-box{width:min(980px,100%);height:min(92vh,900px);background:#fff;border-radius:20px;box-shadow:0 24px 70px rgba(15,23,42,.25);display:flex;flex-direction:column;overflow:hidden}
 .doc-preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid #e6ebf2;background:#fff;flex:0 0 auto}
@@ -1297,7 +1299,9 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
 
     var t = db.transactions[index];
     var label = t.type === "purchase" ? "purchase" : "sale";
-    if (!window.confirm("Delete this " + label + " transaction?")) return;
+    var party = t.buyer ? " for " + t.buyer : "";
+    var warning = "⚠️ WARNING\n\nDelete this " + label + " transaction" + party + "?\n\nDate: " + (t.date || "—") + "\nLocation: " + (t.location || "—") + "\n\nThis action cannot be undone.";
+    if (!window.confirm(warning)) return;
 
     db.transactions.splice(index, 1);
     save();
@@ -1430,66 +1434,36 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       button.textContent = busy ? text : (button.id === "docPreviewPdf" ? "📄 Save PDF" : "🖨️ Print");
     }
 
-    async function savePdf() {
+    function savePdf() {
+      // Do not depend on html2canvas/jsPDF. Android WebViews often block or fail
+      // to load those external PDF engines. Use the browser's native print sheet;
+      // on Android/Chrome the user can select "Save as PDF" there.
       var pdfBtn = document.getElementById("docPreviewPdf");
-      var content = document.getElementById("docPreviewContent");
-      if (!content) return;
-      if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
-        toast("PDF engine is still loading. Please tap Save PDF again.");
-        return;
+      if (pdfBtn) {
+        pdfBtn.disabled = true;
+        pdfBtn.style.opacity = ".65";
+        pdfBtn.textContent = "Opening PDF…";
       }
-      setBusy(pdfBtn, true, "Creating PDF…");
       try {
-        var canvas = await window.html2canvas(content, {
-          scale: Math.min(2, window.devicePixelRatio || 1.5),
-          backgroundColor: "#ffffff",
-          useCORS: true,
-          logging: false,
-          scrollX: 0,
-          scrollY: -window.scrollY
-        });
-        var jsPDF = window.jspdf.jsPDF;
-        var pdf = new jsPDF({orientation:"p", unit:"mm", format:"a4", compress:true});
-        var pageW = 210, pageH = 297;
-        var margin = 8;
-        var usableW = pageW - margin * 2;
-        var imgW = usableW;
-        var imgH = canvas.height * imgW / canvas.width;
-        var pageContentH = pageH - margin * 2;
-        var pixelsPerPage = Math.floor(canvas.width * pageContentH / imgW);
-        var offsetY = 0;
-        var page = 0;
-        while (offsetY < canvas.height) {
-          var sliceH = Math.min(pixelsPerPage, canvas.height - offsetY);
-          var slice = document.createElement("canvas");
-          slice.width = canvas.width;
-          slice.height = sliceH;
-          var ctx = slice.getContext("2d");
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0,0,slice.width,slice.height);
-          ctx.drawImage(canvas, 0, offsetY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-          var sliceHmm = sliceH * imgW / canvas.width;
-          if (page > 0) pdf.addPage();
-          pdf.addImage(slice.toDataURL("image/jpeg", 0.92), "JPEG", margin, margin, imgW, sliceHmm, undefined, "FAST");
-          offsetY += sliceH;
-          page++;
-        }
-        var safeName = String(title || "Brick Manager Document").replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "") || "Brick_Manager_Document";
-        pdf.save(safeName + ".pdf");
-        toast("PDF saved successfully");
+        doPrint();
+        toast("Choose 'Save as PDF' in the print screen.");
       } catch (err) {
         console.error(err);
-        toast("Could not create PDF. Please try again.");
+        toast("Could not open the PDF print screen.");
       } finally {
-        setBusy(pdfBtn, false);
+        if (pdfBtn) {
+          setTimeout(function(){
+            pdfBtn.disabled = false;
+            pdfBtn.style.opacity = "1";
+            pdfBtn.textContent = "📄 Save PDF";
+          }, 700);
+        }
       }
     }
 
     function doPrint() {
-      // IMPORTANT: keep printing inside this single index.html file.
-      // Do not depend on print.html or another local file. Some Android WebView
-      // wrappers convert a relative print URL into a file:///... path and then
-      // return ERR_FILE_NOT_FOUND. A self-contained data: document avoids that.
+      // Create the print document directly in a temporary browser window.
+      // No print.html, no file:// dependency, and no second app/file is needed.
       var printCss = `
         *{box-sizing:border-box}
         html,body{margin:0;padding:0;background:#fff;color:#17212b;font-family:Arial,Helvetica,sans-serif}
@@ -1520,26 +1494,33 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
           .document{max-width:none}
         }
       `;
-
       var printHtml = '<!doctype html><html><head><meta charset="utf-8">' +
         '<meta name="viewport" content="width=device-width,initial-scale=1">' +
         '<title>' + escapeHtml(title || "Brick Manager Document") + '</title>' +
         '<style>' + printCss + '</style></head>' +
-        '<body onload="setTimeout(function(){try{window.focus();window.print();}catch(e){}},450)">' +
-        '<div class="toolbar"><div class="brand">🧱 Brick Manager — Print</div>' +
-        '<div class="actions"><button class="back" type="button" onclick="if(history.length>1){history.back();}else{window.close();}">← Back to app</button>' +
+        '<body><div class="toolbar"><div class="brand">🧱 Brick Manager — Print</div>' +
+        '<div class="actions"><button class="back" type="button" onclick="window.close()">← Back to app</button>' +
         '<button class="print" type="button" onclick="window.print()">🖨️ Print / Save PDF</button></div></div>' +
-        '<div id="document" class="document">' + bodyHtml + '</div>' +
-        '</body></html>';
+        '<div class="document">' + bodyHtml + '</div></body></html>';
 
-      var dataUrl = "data:text/html;charset=utf-8," + encodeURIComponent(printHtml);
       var printWindow = null;
-      try { printWindow = window.open(dataUrl, "BrickManagerPrint"); } catch (e) {}
-
+      try { printWindow = window.open("", "BrickManagerPrint"); } catch (e) {}
       if (!printWindow) {
-        // Popup blocked: open the self-contained print document in the current tab.
-        // The app is still a single index.html file; Android/browser Back returns to it.
-        window.location.href = dataUrl;
+        toast("Please allow pop-ups for printing.");
+        return;
+      }
+      try {
+        printWindow.document.open();
+        printWindow.document.write(printHtml);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(function(){
+          try { printWindow.print(); } catch (e) {}
+        }, 500);
+      } catch (err) {
+        console.error(err);
+        try { printWindow.close(); } catch (e) {}
+        toast("Could not open the print screen.");
       }
     }
 
@@ -1592,28 +1573,82 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
   }
 
   function downloadLocationStatement(location) {
-    var txs = db.transactions.filter(function(t){ return t.location === location; }).slice().sort(function(a,b){ return String(a.date).localeCompare(String(b.date)); });
-    var purchases = txs.filter(function(t){return t.type === "purchase";});
-    var sales = txs.filter(function(t){return t.type === "sale";});
-    var purchaseQty = purchases.reduce(function(a,t){return a+num(t.qty);},0);
-    var saleQty = sales.reduce(function(a,t){return a+num(t.qty);},0);
-    var purchaseTotal = purchases.reduce(function(a,t){return a+(num(t.qty)*num(t.rate))/1000+num(t.extra);},0);
-    var salesTotal = sales.reduce(function(a,t){return a+(num(t.qty)*num(t.rate))/1000+num(t.extra);},0);
-    var totalDue = txs.reduce(function(a,t){ return a + (t.type === "sale" ? txDueAmount(t) : 0); }, 0);
-    var totalPaid = txs.reduce(function(a,t){ return a + (t.type === "sale" ? txPaidAmount(t) : 0); }, 0);
-    var rows = txs.map(function(t){
-      var total=txTotal(t);
-      var paid=t.type === "sale" ? txPaidAmount(t) : total;
-      var due=t.type === "sale" ? txDueAmount(t) : 0;
-      return '<tr><td>'+escapeHtml(t.date)+'</td><td>'+ (t.type==='purchase'?'Purchase':'Sale') +'</td><td>'+qty(t.qty)+'</td><td>'+money(t.rate)+'</td><td>'+escapeHtml(t.buyer||'—')+'</td><td>'+escapeHtml(t.phone||'—')+'</td><td>'+money(total)+'</td><td>'+escapeHtml(t.status || 'Paid')+'</td><td>'+money(paid)+'</td><td>'+money(due)+'</td></tr>';
-    }).join('');
-    if(!rows) rows='<tr><td colspan="10">No transactions for this location.</td></tr>';
-    var body='<div class="head"><div><h1>Brick Manager</h1><div class="muted">LOCATION STATEMENT</div></div><div class="muted"><b>Location:</b> '+escapeHtml(location)+'<br><b>Generated:</b> '+escapeHtml(todayISO())+'</div></div>'+
-      '<div class="box"><div class="grid"><div><b>Purchases</b><br>'+purchases.length+' transactions · '+qty(purchaseQty)+' bricks · '+money(purchaseTotal)+'</div><div><b>Sales</b><br>'+sales.length+' transactions · '+qty(saleQty)+' bricks · '+money(salesTotal)+'</div></div></div>'+
-      '<table><thead><tr><th>Date</th><th>Type</th><th>Qty</th><th>Rate/1000</th><th>Customer/Supplier</th><th>Phone</th><th>Payable</th><th>Status</th><th>Paid</th><th>Due</th></tr></thead><tbody>'+rows+'</tbody></table>'+
-      '<div class="box" style="margin-top:14px"><div class="row"><span>Total sales paid</span><b>'+money(totalPaid)+'</b></div><div class="row"><span>Total sales due</span><b>'+money(totalDue)+'</b></div></div>'+
-      '<div class="total">Net sales value: '+money(salesTotal)+'</div>';
-    printDocument(location + " Statement", body);
+    var old = document.getElementById("statementSelectOverlay");
+    if (old) old.remove();
+
+    var overlay = document.createElement("div");
+    overlay.id = "statementSelectOverlay";
+    overlay.className = "doc-preview-overlay";
+    overlay.innerHTML =
+      '<div class="doc-preview-box statement-selector-box" role="dialog" aria-modal="true" aria-label="Location statement">' +
+        '<div class="doc-preview-toolbar">' +
+          '<div class="doc-title">' + escapeHtml(location) + ' Statement</div>' +
+          '<div class="doc-preview-actions"><button type="button" class="doc-preview-close" id="statementClose">Close</button></div>' +
+        '</div>' +
+        '<div class="statement-selector-body">' +
+          '<div class="statement-filter-card">' +
+            '<label for="statementTypeSelect"><b>Statement type</b></label>' +
+            '<select id="statementTypeSelect" class="statement-type-select">' +
+              '<option value="purchase">Purchase</option>' +
+              '<option value="sale">Sale</option>' +
+            '</select>' +
+            '<div class="muted" style="margin-top:7px">Select Purchase to show only purchase transactions, or Sale to show only sales transactions.</div>' +
+          '</div>' +
+          '<div id="statementSelectionContent"></div>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    var allTxs = db.transactions.filter(function(t){ return t.location === location; }).slice().sort(function(a,b){ return String(a.date).localeCompare(String(b.date)); });
+
+    function buildStatementBody(type) {
+      var txs = allTxs.filter(function(t){ return t.type === type; });
+      var totalQty = txs.reduce(function(a,t){ return a + num(t.qty); }, 0);
+      var totalValue = txs.reduce(function(a,t){ return a + txTotal(t); }, 0);
+      var totalPaid = txs.reduce(function(a,t){ return a + (type === "sale" ? txPaidAmount(t) : txTotal(t)); }, 0);
+      var totalDue = txs.reduce(function(a,t){ return a + (type === "sale" ? txDueAmount(t) : 0); }, 0);
+      var rows = txs.map(function(t){
+        var total = txTotal(t);
+        var paid = type === "sale" ? txPaidAmount(t) : total;
+        var due = type === "sale" ? txDueAmount(t) : 0;
+        var party = t.buyer || "—";
+        return '<tr><td>'+escapeHtml(t.date)+'</td><td>'+qty(t.qty)+'</td><td>'+money(t.rate)+'</td><td>'+escapeHtml(party)+'</td><td>'+escapeHtml(t.phone||'—')+'</td><td>'+money(total)+'</td><td>'+escapeHtml(t.status || 'Paid')+'</td><td>'+money(paid)+'</td><td>'+money(due)+'</td></tr>';
+      }).join('');
+      if(!rows) rows='<tr><td colspan="9">No '+(type === "purchase" ? "purchase" : "sale")+' transactions for this location.</td></tr>';
+      var title = type === "purchase" ? "PURCHASE STATEMENT" : "SALES STATEMENT";
+      var body = '<div class="head"><div><h1>Brick Manager</h1><div class="muted">'+title+'</div></div><div class="muted"><b>Location:</b> '+escapeHtml(location)+'<br><b>Generated:</b> '+escapeHtml(todayISO())+'</div></div>' +
+        '<div class="box"><div class="grid"><div><b>'+ (type === "purchase" ? "Purchases" : "Sales") +'</b><br>'+txs.length+' transactions · '+qty(totalQty)+' bricks · '+money(totalValue)+'</div><div><b>Payment</b><br>Paid: '+money(totalPaid)+'<br>Due: '+money(totalDue)+'</div></div></div>' +
+        '<table><thead><tr><th>Date</th><th>Qty</th><th>Rate/1000</th><th>'+ (type === "purchase" ? "Supplier" : "Buyer") +'</th><th>Phone</th><th>Payable</th><th>Status</th><th>Paid</th><th>Due</th></tr></thead><tbody>'+rows+'</tbody></table>' +
+        '<div class="box" style="margin-top:14px"><div class="row"><span>Total '+(type === "purchase" ? "purchase" : "sales")+' value</span><b>'+money(totalValue)+'</b></div><div class="row"><span>Total paid</span><b>'+money(totalPaid)+'</b></div><div class="row"><span>Total due</span><b>'+money(totalDue)+'</b></div></div>';
+      return { body: body, count: txs.length, totalValue: totalValue, totalPaid: totalPaid, totalDue: totalDue };
+    }
+
+    function renderSelection(type) {
+      var data = buildStatementBody(type);
+      var content = document.getElementById("statementSelectionContent");
+      if (!content) return;
+      content.innerHTML = '<div class="statement-live-summary"><b>'+ (type === "purchase" ? "Purchase" : "Sale") +' transactions:</b> '+data.count+' &nbsp;·&nbsp; <b>Total:</b> '+money(data.totalValue)+' &nbsp;·&nbsp; <b>Paid:</b> '+money(data.totalPaid)+' &nbsp;·&nbsp; <b>Due:</b> '+money(data.totalDue)+'</div>' +
+        '<div class="statement-actions" style="margin-bottom:12px">' +
+          '<button type="button" class="btn primary" id="statementPrintBtn">🖨️ Print '+(type === "purchase" ? "Purchase" : "Sale")+'</button>' +
+          '<button type="button" class="btn ghost" id="statementPdfBtn">📄 Save PDF</button>' +
+        '</div>' +
+        '<div class="doc-preview-content statement-mini-preview">'+data.body+'</div>';
+
+      document.getElementById("statementPrintBtn").addEventListener("click", function(){
+        printDocument(location + " " + (type === "purchase" ? "Purchase Statement" : "Sales Statement"), data.body);
+      });
+      document.getElementById("statementPdfBtn").addEventListener("click", function(){
+        printDocument(location + " " + (type === "purchase" ? "Purchase Statement" : "Sales Statement"), data.body);
+        setTimeout(function(){
+          var pdfBtn = document.getElementById("docPreviewPdf");
+          if (pdfBtn) pdfBtn.click();
+        }, 120);
+      });
+    }
+
+    document.getElementById("statementClose").addEventListener("click", function(){ overlay.remove(); });
+    document.getElementById("statementTypeSelect").addEventListener("change", function(){ renderSelection(this.value); });
+    renderSelection("purchase");
   }
 
   /* ------------------------------------------------------------------
@@ -1684,10 +1719,11 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     if (index === undefined || index === null || index < 0) index = LOCATIONS.indexOf(name);
     if (index === -1) { toast("Location not found"); return; }
 
-    var used = db.transactions.some(function (t) { return t.location === name; });
-    if (used && !window.confirm('"' + name + '" has transactions. Delete it anyway?\n\nIts transactions will keep the old location name in history.')) {
-      return;
-    }
+    var transactionCount = db.transactions.filter(function (t) { return t.location === name; }).length;
+    var warning = "⚠️ WARNING\n\nDelete location \"" + name + "\"?\n\n" +
+      (transactionCount ? ("This location has " + transactionCount + " transaction" + (transactionCount === 1 ? "" : "s") + ".\nThose transactions will remain in history with the old location name.\n\n") : "This location has no transactions.\n\n") +
+      "This action cannot be undone.";
+    if (!window.confirm(warning)) return;
 
     LOCATIONS.splice(index, 1);
     saveLocations();
