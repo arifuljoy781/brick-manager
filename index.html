@@ -1627,8 +1627,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       var data = buildStatementBody(type);
       var content = document.getElementById("statementSelectionContent");
       if (!content) return;
-      content.innerHTML = '<div class="statement-live-summary"><b>'+ (type === "purchase" ? "Purchase" : "Sale") +' transactions:</b> '+data.count+' &nbsp;·&nbsp; <b>Total:</b> '+money(data.totalValue)+' &nbsp;·&nbsp; <b>Paid:</b> '+money(data.totalPaid)+' &nbsp;·&nbsp; <b>Due:</b> '+money(data.totalDue)+'</div>' +
-        '<div class="statement-actions" style="margin-bottom:12px">' +
+      content.innerHTML = '<div class="statement-actions" style="margin-bottom:12px">' +
           '<button type="button" class="btn primary" id="statementPrintBtn">🖨️ Print '+(type === "purchase" ? "Purchase" : "Sale")+'</button>' +
           '<button type="button" class="btn ghost" id="statementPdfBtn">📄 Save PDF</button>' +
         '</div>' +
