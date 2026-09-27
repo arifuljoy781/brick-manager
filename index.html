@@ -247,23 +247,496 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
   #docPrintOverlay .doc-preview-toolbar{display:none!important}
   #docPrintOverlay .doc-preview-content{overflow:visible!important;padding:0!important}
 }
+
+/* Clean modern invoice & statement design */
+.doc-preview-content{background:#f4f6f8;color:#1f2937;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.doc-preview-content .premium-doc{max-width:980px;margin:0 auto;background:#fff;border:1px solid #dfe3e8;border-radius:10px;box-shadow:0 8px 28px rgba(31,41,55,.08);overflow:hidden}
+.doc-preview-content .premium-top{padding:22px 26px;background:#1f2937;color:#fff;display:flex;justify-content:space-between;gap:20px;align-items:flex-start;border-bottom:4px solid #d97706}
+.doc-preview-content .premium-top h1{color:#fff;margin:0;font-size:25px;letter-spacing:-.5px}
+.doc-preview-content .premium-top .sub{margin-top:6px;color:#fbbf24;font-size:11px;font-weight:800;letter-spacing:1.5px}
+.doc-preview-content .doc-number{background:#374151;border:1px solid #4b5563;padding:9px 12px;border-radius:8px;text-align:right;font-size:11px;line-height:1.65;color:#f3f4f6}
+.doc-preview-content .party-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:18px 22px 8px}
+.doc-preview-content .party-card{border:1px solid #e5e7eb;border-radius:8px;padding:13px 15px;background:#fff;border-left:3px solid #d97706}
+.doc-preview-content .party-card .label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#6b7280;font-weight:800;margin-bottom:6px}
+.doc-preview-content .party-card .value{font-weight:800;font-size:15px;color:#111827}
+.doc-preview-content .party-card .phone{font-size:12px;color:#6b7280;margin-top:4px}
+.doc-preview-content .summary-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px 22px}
+.doc-preview-content .summary-card{border:1px solid #e5e7eb;border-radius:8px;padding:12px;background:#f9fafb}
+.doc-preview-content .summary-card .label{font-size:9px;text-transform:uppercase;color:#6b7280;font-weight:800;letter-spacing:.8px}
+.doc-preview-content .summary-card .value{font-size:17px;font-weight:900;margin-top:5px;color:#111827}
+.doc-preview-content .summary-card .small{font-size:10px;color:#6b7280;margin-top:3px}
+.doc-preview-content .premium-table-wrap{padding:8px 22px 0;overflow-x:auto}
+.doc-preview-content .premium-table{margin:0!important;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden}
+.doc-preview-content .premium-table th{background:#f3f4f6!important;color:#374151;font-size:9px;text-transform:uppercase;letter-spacing:.5px;border-color:#e5e7eb!important}
+.doc-preview-content .premium-table td{border-color:#e5e7eb!important;background:#fff;color:#374151}
+.doc-preview-content .premium-table tr:nth-child(even) td{background:#fafafa}
+.doc-preview-content .amount-box{margin:16px 22px 20px;border:1px solid #e5e7eb;border-radius:8px;background:#fafafa;padding:13px 16px}
+.doc-preview-content .amount-row{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid #e5e7eb;font-size:13px}
+.doc-preview-content .amount-row:last-child{border-bottom:0}
+.doc-preview-content .grand-total{font-size:19px;font-weight:900;color:#111827}
+.doc-preview-content .due-total{color:#b91c1c}
+.doc-preview-content .paid-total{color:#047857}
+.doc-preview-content .status-pill{display:inline-flex;align-items:center;border-radius:5px;padding:4px 8px;font-size:9px;font-weight:900;background:#ecfdf5;color:#047857;border:1px solid #bbf7d0}
+.doc-preview-content .status-pill.due{background:#fef2f2;color:#b91c1c;border-color:#fecaca}
+.doc-preview-content .status-pill.partial{background:#fffbeb;color:#b45309;border-color:#fde68a}
+.doc-preview-content .doc-footer{padding:14px 22px 18px;color:#9ca3af;font-size:9px;text-align:center;border-top:1px solid #e5e7eb}
+.doc-preview-content .statement-banner{margin:18px 22px 8px;padding:14px 16px;border-radius:8px;background:#f9fafb;border:1px solid #e5e7eb;border-left:4px solid #d97706;display:flex;justify-content:space-between;gap:14px;align-items:center}
+.doc-preview-content .statement-banner .big{font-size:17px;font-weight:900;color:#111827}
+.doc-preview-content .statement-banner .meta{font-size:10px;color:#6b7280;margin-top:3px}
+@media(max-width:600px){.doc-preview-content .premium-top{padding:18px;display:block}.doc-preview-content .doc-number{margin-top:12px;text-align:left}.doc-preview-content .party-grid,.doc-preview-content .summary-cards{grid-template-columns:1fr;padding-left:15px;padding-right:15px}.doc-preview-content .premium-table-wrap{padding-left:15px;padding-right:15px}.doc-preview-content .amount-box,.doc-preview-content .statement-banner{margin-left:15px;margin-right:15px}.doc-preview-content .premium-top h1{font-size:22px}.doc-preview-content .statement-banner{display:block}.doc-preview-content .statement-banner .big:last-child{margin-top:8px}}
+@media print{.doc-preview-content{background:#fff!important}.doc-preview-content .premium-doc{box-shadow:none!important;border:0!important;border-radius:0!important}.doc-preview-content .premium-top{print-color-adjust:exact;-webkit-print-color-adjust:exact}.doc-preview-content .summary-card,.doc-preview-content .party-card,.doc-preview-content .amount-box,.doc-preview-content .statement-banner{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
+
+/* ===== SIMPLE STATEMENT / INVOICE DESIGN (matched to supplied reference images) ===== */
+.doc-preview-content{
+  background:#fff !important;
+  color:#172033 !important;
+  padding:0 !important;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif !important;
+}
+.bm-doc{
+  width:100%;
+  max-width:1200px;
+  margin:0 auto;
+  background:#fff;
+  color:#172033;
+}
+.bm-doc-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:24px;
+  padding:34px 22px 14px;
+  border-bottom:2px solid #0f766e;
+}
+.bm-doc-brand h1{
+  margin:0;
+  color:#0f766e;
+  font-size:36px;
+  line-height:1.05;
+  font-weight:800;
+  letter-spacing:-1px;
+}
+.bm-doc-brand .bm-doc-sub{
+  margin-top:12px;
+  color:#64748b;
+  font-size:15px;
+  letter-spacing:.2px;
+}
+.bm-doc-meta{
+  text-align:right;
+  color:#64748b;
+  font-size:14px;
+  line-height:1.55;
+  padding-top:4px;
+}
+.bm-doc-meta b{color:#64748b}
+.bm-doc-card{
+  margin:20px 0 0;
+  border:1px solid #dbe3ea;
+  border-radius:14px;
+  background:#fff;
+}
+.bm-doc-summary{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:36px;
+  padding:20px 18px;
+}
+.bm-doc-summary h3{
+  margin:0 0 6px;
+  font-size:20px;
+  color:#172033;
+  font-weight:800;
+}
+.bm-doc-summary p{
+  margin:0;
+  font-size:18px;
+  color:#172033;
+  line-height:1.5;
+}
+.bm-doc-table-wrap{margin-top:18px;overflow-x:auto}
+.bm-doc-table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:auto;
+}
+.bm-doc-table th,
+.bm-doc-table td{
+  border:1px solid #d7dee5;
+  padding:13px 12px;
+  text-align:left;
+  font-size:14px;
+  color:#273244;
+  white-space:nowrap;
+}
+.bm-doc-table th{
+  background:#f1f5f5;
+  color:#172033;
+  font-weight:800;
+}
+.bm-doc-table td{background:#fff}
+.bm-doc-totals{
+  margin-top:18px;
+  border:1px solid #dbe3ea;
+  border-radius:14px;
+  background:#fff;
+  padding:18px 18px;
+}
+.bm-doc-total-row{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:12px 0;
+  border-bottom:1px solid #e5e7eb;
+  font-size:18px;
+  color:#273244;
+}
+.bm-doc-total-row:last-child{border-bottom:0}
+.bm-doc-total-row strong{font-weight:800;color:#172033}
+.bm-doc-total-row .paid{color:#047857}
+.bm-doc-total-row .due{color:#b91c1c}
+.bm-doc-footer{
+  padding:18px 0 24px;
+  color:#94a3b8;
+  text-align:center;
+  font-size:11px;
+}
+.bm-invoice-party{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:36px;
+  padding:22px 18px;
+}
+.bm-invoice-party .label{
+  font-size:19px;
+  font-weight:800;
+  color:#172033;
+  margin-bottom:7px;
+}
+.bm-invoice-party .value{
+  font-size:18px;
+  color:#172033;
+}
+.bm-invoice-total{
+  text-align:right;
+  font-size:25px;
+  font-weight:800;
+  color:#172033;
+  padding:18px 0 0;
+}
+.bm-invoice-payment{
+  margin-top:18px;
+  border:1px solid #dbe3ea;
+  border-radius:14px;
+  padding:18px;
+  background:#fff;
+}
+.bm-invoice-payment .row{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:13px 0;
+  border-bottom:1px solid #e5e7eb;
+  font-size:18px;
+  color:#172033;
+}
+.bm-invoice-payment .row:last-child{border-bottom:0}
+.bm-invoice-payment .value{font-weight:800}
+.bm-invoice-payment .paid{color:#047857}
+.bm-invoice-payment .due{color:#b91c1c}
+@media(max-width:700px){
+  .bm-doc-head{padding:24px 15px 13px;gap:12px}
+  .bm-doc-brand h1{font-size:29px}
+  .bm-doc-brand .bm-doc-sub{font-size:12px;margin-top:9px}
+  .bm-doc-meta{font-size:11px}
+  .bm-doc-summary,.bm-invoice-party{grid-template-columns:1fr;gap:14px;padding:16px 14px}
+  .bm-doc-summary h3,.bm-invoice-party .label{font-size:17px}
+  .bm-doc-summary p,.bm-invoice-party .value{font-size:14px}
+  .bm-doc-table th,.bm-doc-table td{font-size:11px;padding:9px 8px}
+  .bm-doc-totals,.bm-invoice-payment{padding:13px 14px}
+  .bm-doc-total-row,.bm-invoice-payment .row{font-size:14px}
+  .bm-invoice-total{font-size:20px;padding:15px 0 0}
+}
+@media print{
+  .doc-preview-content{background:#fff!important}
+  .bm-doc{max-width:none}
+  .bm-doc-head{padding-top:0}
+  .bm-doc-card,.bm-doc-totals,.bm-invoice-payment{break-inside:avoid}
+  .bm-doc-table{page-break-inside:auto}
+  .bm-doc-table tr{page-break-inside:avoid;page-break-after:auto}
+}
+
+/* Brick Manager authentication design — adapted from supplied login design */
+.bm-auth-stage{position:fixed;inset:0;z-index:9999;display:flex;justify-content:center;align-items:center;background:#e7ebf0;overflow:hidden;}
+.bm-auth-stage.hidden{display:none!important;}
+.bm-auth-stage *{box-sizing:border-box;font-family:"Poppins",sans-serif;}
+.bm-auth-stage .bg-circle{position:fixed;border-radius:50%;background:#e7ebf0;box-shadow:15px 15px 30px rgba(163,177,198,.55),-15px -15px 30px rgba(255,255,255,.9);z-index:0;animation:floating 6s ease-in-out infinite;}
+.bm-auth-stage .bg1{width:190px;height:190px;top:7%;left:7%;}.bm-auth-stage .bg2{width:130px;height:130px;right:8%;bottom:8%;animation-delay:1.5s}.bm-auth-stage .bg3{width:55px;height:55px;right:20%;top:22%;animation-delay:3s}
+.bm-auth-stage .auth-wrapper{width:400px;max-width:92%;perspective:1600px;z-index:2}.bm-auth-stage .auth-card{position:relative;width:100%;min-height:650px;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.68,-.55,.27,1.55)}
+.bm-auth-stage .form-panel{position:absolute;inset:0;padding:40px 38px;border-radius:35px;background:#e7ebf0;box-shadow:20px 20px 40px rgba(163,177,198,.65),-20px -20px 40px rgba(255,255,255,.95);backface-visibility:hidden}
+.bm-auth-stage .logo{width:86px;height:86px;margin:0 auto 18px;display:flex;justify-content:center;align-items:center;border-radius:50%;font-size:30px;color:#087cff;background:#e7ebf0;box-shadow:9px 9px 18px rgba(163,177,198,.65),-9px -9px 18px rgba(255,255,255,.95);transition:.4s ease}.bm-auth-stage .logo:hover{transform:translateY(-5px) rotate(8deg)}
+.bm-auth-stage h1{text-align:center;font-size:27px;color:#303943;margin:0 0 7px}.bm-auth-stage .subtitle{text-align:center;color:#7c858e;font-size:13px;margin:0 0 30px}.bm-auth-stage .input-group{position:relative;width:100%;height:58px;margin-bottom:19px}.bm-auth-stage .electric-border{position:absolute;inset:-2px;border-radius:19px;overflow:hidden;pointer-events:none;opacity:0;transition:opacity .2s ease}.bm-auth-stage .electric-border::before{content:"";position:absolute;width:170%;height:170%;left:-35%;top:-35%;background:conic-gradient(from 0deg,transparent 0deg,transparent 30deg,#00eaff 45deg,#00aaff 65deg,#006cff 80deg,transparent 105deg,transparent 360deg);animation:electricRotate 1.1s linear infinite}.bm-auth-stage .electric-border::after{content:"";position:absolute;inset:2px;border-radius:17px;background:#e7ebf0}.bm-auth-stage .electric-glow{position:absolute;inset:-4px;border-radius:21px;pointer-events:none;opacity:0;filter:blur(7px)}.bm-auth-stage .input-group:focus-within .electric-border{opacity:1}.bm-auth-stage .input-group:focus-within .electric-glow{opacity:.55;animation:electricRotate 1.1s linear infinite}
+.bm-auth-stage .input-group input{position:absolute;inset:2px;width:calc(100% - 4px);height:54px;border:none;outline:none;border-radius:16px;background:#e7ebf0;color:#303943;font-size:15px;padding:0 48px 0 18px;z-index:20;box-shadow:inset 6px 6px 12px rgba(163,177,198,.55),inset -6px -6px 12px rgba(255,255,255,.95);transition:box-shadow .25s ease}.bm-auth-stage .input-group input:focus{box-shadow:inset 3px 3px 7px rgba(163,177,198,.55),inset -3px -3px 7px rgba(255,255,255,.95)}.bm-auth-stage .input-group label{position:absolute;left:18px;top:20px;z-index:30;color:#89929c;font-size:16px;pointer-events:none;transition:all .25s ease}.bm-auth-stage .input-group input:focus+label,.bm-auth-stage .input-group input:not(:placeholder-shown)+label{top:-8px;left:13px;padding:2px 8px;border-radius:7px;background:#e7ebf0;color:#0072ff;font-size:10px;line-height:14px;white-space:nowrap}
+.bm-auth-stage .password-toggle{position:absolute;right:14px;top:15px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:#7d8790;cursor:pointer;z-index:40;font-size:18px}.bm-auth-stage .password-toggle:hover{color:#006cff;transform:scale(1.1)}.bm-auth-stage .options{display:flex;justify-content:space-between;align-items:center;margin:5px 3px 24px;color:#7d8790;font-size:14px}.bm-auth-stage .checkbox{display:flex;align-items:center;gap:7px}.bm-auth-stage .checkbox input{accent-color:#0072ff}.bm-auth-stage .authforgot{border:0;background:none;color:#006cff;text-decoration:none;font-size:12px;cursor:pointer}.bm-auth-stage .main-btn{position:relative;isolation:isolate;width:100%;height:55px;border:none;border-radius:17px;background:#e7ebf0;color:#006cff;font-size:14px;font-weight:700;letter-spacing:.4px;cursor:pointer;overflow:hidden;box-shadow:8px 8px 16px rgba(163,177,198,.65),-8px -8px 16px rgba(255,255,255,.95);transition:.3s ease}.bm-auth-stage .main-btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,#006cff,#00cfff,#006cff);background-size:200% 100%;transform:translateY(100%);transition:transform .35s ease;z-index:-1}.bm-auth-stage .main-btn:hover::before{transform:translateY(0);animation:buttonMove 1.5s linear infinite}.bm-auth-stage .main-btn:hover{color:#fff;transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,114,255,.35)}.bm-auth-stage .main-btn:active{transform:scale(.97)}
+.bm-auth-stage .switch-area{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:27px;font-size:12px;color:#7d8790}.bm-auth-stage .switch-circle{width:49px;height:49px;border:none;border-radius:50%;background:#e7ebf0;color:#0072ff;font-size:22px;cursor:pointer;display:flex;justify-content:center;align-items:center;box-shadow:7px 7px 14px rgba(163,177,198,.65),-7px -7px 14px rgba(255,255,255,.95);transition:.35s ease}.bm-auth-stage .switch-circle:hover{color:#fff;background:#0072ff;transform:rotate(180deg) scale(1.08);box-shadow:0 8px 25px rgba(0,114,255,.35)}.bm-auth-stage .switch-circle:active{transform:scale(.9)}.bm-auth-stage .authfoot{text-align:center;color:#9aa2aa;font-size:10px;line-height:1.5;margin-top:18px}.bm-auth-stage .authmsg{min-height:20px;text-align:center;color:#dc2626;font-size:12px;margin:-10px 0 10px}.bm-auth-stage .hidden{display:none!important}
+@keyframes floating{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@keyframes electricRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes buttonMove{from{background-position:0 50%}to{background-position:200% 50%}}
+@media(max-width:520px){.bm-auth-stage .auth-wrapper{max-width:94%}.bm-auth-stage .form-panel{padding:32px 24px;border-radius:28px}.bm-auth-stage .auth-card{min-height:620px}.bm-auth-stage .bg1{width:130px;height:130px}.bm-auth-stage .bg2{width:90px;height:90px}}
+
+/* Logout button polish */
+.accountbtn{transition:transform .25s ease,box-shadow .25s ease,background .25s ease}.accountbtn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,118,110,.22)}.accountbtn:active{transform:scale(.95)}.accountbtn[data-action="firebase-signout"]{position:relative;overflow:hidden}.accountbtn[data-action="firebase-signout"]::after{content:"↪";display:inline-block;margin-left:5px;transition:transform .3s ease}.accountbtn[data-action="firebase-signout"]:hover::after{transform:translateX(4px)}
+.bm-auth-stage .auth-wrapper{animation:authEnter .75s cubic-bezier(.22,1,.36,1) both}.bm-auth-stage .logo{animation:logoPulse 2.8s ease-in-out infinite}.bm-auth-stage .form-panel{animation:cardGlow 4s ease-in-out infinite}
+@keyframes authEnter{from{opacity:0;transform:translateY(28px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes logoPulse{0%,100%{box-shadow:9px 9px 18px rgba(163,177,198,.65),-9px -9px 18px rgba(255,255,255,.95)}50%{box-shadow:0 0 0 8px rgba(0,114,255,.05),9px 9px 18px rgba(163,177,198,.65),-9px -9px 18px rgba(255,255,255,.95)}}
+@keyframes cardGlow{0%,100%{box-shadow:20px 20px 40px rgba(163,177,198,.65),-20px -20px 40px rgba(255,255,255,.95)}50%{box-shadow:24px 24px 46px rgba(163,177,198,.58),-24px -24px 46px rgba(255,255,255,.98)}}
+
+/* Full Login / Create Account switch is one clickable area */
+.bm-auth-stage .switch-area{
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  border-radius:22px;
+  padding:8px 10px;
+  transition:background .2s ease, transform .15s ease;
+}
+.bm-auth-stage .switch-area:hover{background:rgba(255,255,255,.35)}
+.bm-auth-stage .switch-area:active{transform:scale(.985)}
+.bm-auth-stage .switch-area span{pointer-events:none}
+.bm-auth-stage .switch-area:focus-visible{
+  outline:2px solid #0072ff;
+  outline-offset:3px;
+}
+
+
+.confirm-password-group .confirm-toggle{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  width:34px;
+  height:34px;
+  border:0;
+  background:transparent;
+  color:#0072ff;
+  cursor:pointer;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+}
+.confirm-password-group .confirm-toggle:hover{background:rgba(0,114,255,.08)}
+.confirm-password-group input{padding-right:52px}
+
+
+/* Brick Manager attractive color theme */
+:root{
+  --bm-bg-1:#081f2d;
+  --bm-bg-2:#123f4a;
+  --bm-card:#102f3d;
+  --bm-card-soft:rgba(255,255,255,.08);
+  --bm-text:#f5fbff;
+  --bm-muted:#b8d3dc;
+  --bm-accent:#20c7a3;
+  --bm-accent-2:#42a5ff;
+  --bm-border:rgba(112,225,211,.32);
+}
+/* Login-only dark theme: deliberately scoped to the authentication screen. */
+.bm-auth-stage{
+  background:
+    radial-gradient(circle at 15% 15%, rgba(32,199,163,.24), transparent 32%),
+    radial-gradient(circle at 85% 80%, rgba(66,165,255,.22), transparent 35%),
+    linear-gradient(135deg,var(--bm-bg-1),var(--bm-bg-2)) !important;
+  color:var(--bm-text) !important;
+}
+.bm-auth-stage .bg-circle{
+  background:rgba(16,47,61,.72) !important;
+  box-shadow:15px 15px 30px rgba(0,0,0,.28),-10px -10px 25px rgba(66,165,255,.06) !important;
+}
+.bm-auth-stage .form-panel{
+  background:linear-gradient(145deg,rgba(18,53,67,.97),rgba(8,31,45,.97)) !important;
+  color:var(--bm-text) !important;
+  box-shadow:0 24px 70px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.bm-auth-stage .logo{
+  background:linear-gradient(145deg,#123f4a,#0b2837) !important;
+  color:var(--bm-accent) !important;
+  box-shadow:9px 9px 18px rgba(0,0,0,.32),-7px -7px 18px rgba(66,165,255,.05) !important;
+}
+.bm-auth-stage h1{color:var(--bm-text) !important}
+.bm-auth-stage .subtitle{color:var(--bm-muted) !important}
+.bm-auth-stage .input-group input{
+  color:var(--bm-text) !important;
+  background:rgba(255,255,255,.065) !important;
+  box-shadow:inset 5px 5px 12px rgba(0,0,0,.25), inset -4px -4px 10px rgba(255,255,255,.025) !important;
+}
+.bm-auth-stage .input-group input:focus{
+  box-shadow:inset 3px 3px 7px rgba(0,0,0,.28),0 0 0 2px rgba(32,199,163,.14) !important;
+}
+.bm-auth-stage .input-group input:focus+label,.bm-auth-stage .input-group input:not(:placeholder-shown)+label{
+  background:#102f3d !important;
+  color:var(--bm-accent) !important;
+}
+.bm-auth-stage .main-btn{
+  background:linear-gradient(135deg,var(--bm-accent),var(--bm-accent-2)) !important;
+  color:#06202b !important;
+  box-shadow:0 12px 28px rgba(32,199,163,.22) !important;
+}
+.bm-auth-stage .switch-area{color:var(--bm-muted) !important}
+.bm-auth-stage .authfoot{color:#8eacb7 !important}
+
+.bm-auth-stage .auth-card,
+.bm-auth-stage .card{
+  background:linear-gradient(145deg,rgba(18,53,67,.96),rgba(8,31,45,.96)) !important;
+  border-color:var(--bm-border) !important;
+  box-shadow:0 24px 70px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+.bm-auth-stage input,
+.bm-auth-stage .input-group input{
+  color:var(--bm-text) !important;
+  background:rgba(255,255,255,.065) !important;
+}
+.bm-auth-stage label,
+.bm-auth-stage .switch-area,
+.bm-auth-stage .auth-subtitle{
+  color:var(--bm-muted) !important;
+}
+.bm-auth-stage .switch-area:hover{
+  background:rgba(32,199,163,.10) !important;
+}
+.bm-auth-stage .password-toggle,
+.bm-auth-stage .confirm-toggle{
+  color:var(--bm-accent) !important;
+}
+.bm-auth-stage .primary-btn,
+.bm-auth-stage button[type="submit"]{
+  background:linear-gradient(135deg,var(--bm-accent),var(--bm-accent-2)) !important;
+  color:#06202b !important;
+  box-shadow:0 12px 28px rgba(32,199,163,.22) !important;
+}
+.bm-auth-stage .primary-btn:hover,
+.bm-auth-stage button[type="submit"]:hover{
+  filter:brightness(1.08);
+  transform:translateY(-1px);
+}
+.bm-auth-stage .switch-circle{
+  background:linear-gradient(135deg,var(--bm-accent),var(--bm-accent-2)) !important;
+  color:#06202b !important;
+  box-shadow:0 8px 22px rgba(32,199,163,.25) !important;
+}
+.bm-auth-stage .electric-border{
+  border-color:rgba(32,199,163,.34) !important;
+}
+.bm-auth-stage .electric-glow{
+  box-shadow:0 0 18px rgba(32,199,163,.24) !important;
+}
+
+
+/* Keep the original invoice/statement document appearance independent from app/login theme. */
+.doc-preview-content, .doc-preview-box { color-scheme: light; }
+.doc-preview-content .premium-doc { background:#fff !important; color:#1f2937 !important; }
+.doc-preview-content .premium-top { background:#1f2937 !important; color:#fff !important; border-bottom-color:#d97706 !important; }
+.doc-preview-content .premium-top h1 { color:#fff !important; }
+.doc-preview-content .party-card, .doc-preview-content .summary-card, .doc-preview-content .amount-box { background:#fff !important; }
+.doc-preview-content .premium-table td { background:#fff !important; color:#374151 !important; }
+.doc-preview-content .premium-table tr:nth-child(even) td { background:#fafafa !important; }
+.doc-preview-content .premium-table th { background:#f3f4f6 !important; color:#374151 !important; }
+
+/* Purchase/Sales statement subtitle emphasis */
+.bm-statement-doc .bm-doc-brand .bm-doc-sub{
+  color:#2563eb !important;
+  font-weight:800 !important;
+  letter-spacing:.35px;
+}
+
+/* Invoice title emphasis */
+.bm-invoice-doc .bm-doc-sub {
+  color: #2563eb !important;
+  font-weight: 800 !important;
+  letter-spacing: .4px;
+}
+
+/* ---------- LOGIN INPUT COLOR & FONT ADJUSTMENTS ---------- */
+.bm-auth-stage .input-group input {
+    color: #17212b !important;                /* dark, readable text */
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    background: #ffffff !important;           /* clean white field */
+    box-shadow: inset 6px 6px 12px rgba(163,177,198,.35), inset -6px -6px 12px rgba(255,255,255,.95) !important;
+    border-radius: 16px !important;
+}
+.bm-auth-stage .input-group input:focus {
+    color: #0f766e !important;                /* accent on focus */
+    box-shadow: inset 3px 3px 7px rgba(163,177,198,.4), 0 0 0 2px rgba(15,118,110,.15) !important;
+    background: #ffffff !important;
+}
+.bm-auth-stage .input-group input::placeholder {
+    color: #94a3b8 !important;
+    font-weight: 400 !important;
+}
+/* Keep the floating label readable */
+.bm-auth-stage .input-group label {
+    color: #64748b !important;
+    font-weight: 500 !important;
+}
+.bm-auth-stage .input-group input:focus+label,
+.bm-auth-stage .input-group input:not(:placeholder-shown)+label {
+    color: #0f766e !important;
+    background: #ffffff !important;           /* label background matches white input */
+    box-shadow: 0 1px 4px rgba(0,0,0,.05) !important;
+}
+/* Password toggle stays visible */
+.bm-auth-stage .password-toggle {
+    color: #0f766e !important;
+}
 </style>
 </head>
 <body>
 <div id="authLoading" class="authloading"><div class="spinner"></div><strong>Loading Brick Manager…</strong></div>
-<div id="authScreen" class="authscreen hidden">
-  <div class="authcard">
-    <div class="authbrand"><div class="authlogo">🧱</div><h1>Brick Manager</h1><p>Manage your purchases, sales, inventory &amp; profit</p></div>
-    <div class="authswitch"><button id="loginTab" class="active" type="button">Log in</button><button id="registerTab" type="button">Create account</button></div>
-    <form id="authForm">
-      <div class="authfield"><label for="authEmail">Email address</label><input class="authinput" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></div>
-      <div class="authfield"><label for="authPassword">Password</label><div class="authinputwrap"><input class="authinput" id="authPassword" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="6" required><button class="authshow" id="togglePassword" type="button">Show</button></div></div>
-      <div id="registerConfirmWrap" class="authfield hidden"><label for="authPassword2">Confirm password</label><div class="authinputwrap"><input class="authinput" id="authPassword2" type="password" autocomplete="new-password" placeholder="Enter password again" minlength="6"></div></div>
-      <button id="forgotBtn" class="authforgot" type="button">Forgot password?</button>
-      <div id="authMsg" class="authmsg" role="alert"></div>
-      <button id="authSubmit" class="authsubmit" type="submit">Log in</button>
-    </form>
-    <div class="authfoot">Your account data is stored securely in your Firebase cloud database and is linked to your account.</div>
+<div id="authScreen" class="authscreen hidden bm-auth-stage">
+  <div class="bg-circle bg1"></div><div class="bg-circle bg2"></div><div class="bg-circle bg3"></div>
+  <div class="auth-wrapper">
+    <div class="auth-card" id="authCard">
+      <div class="form-panel login-panel">
+        <div class="logo">🧱</div>
+        <h1 id="authTitle">Welcome Back</h1>
+        <p class="subtitle" id="authSubtitle">Sign in to continue to Brick Manager</p>
+        <form id="authForm">
+          <div class="input-group">
+            <div class="electric-border"></div><div class="electric-glow"></div>
+            <input id="authEmail" type="email" autocomplete="email" placeholder=" " required>
+            <label for="authEmail">Email address</label>
+          </div>
+          <div class="input-group">
+            <div class="electric-border"></div><div class="electric-glow"></div>
+            <input id="authPassword" type="password" autocomplete="current-password" placeholder=" " minlength="6" required>
+            <label for="authPassword">Password</label>
+            <button class="password-toggle" id="togglePassword" type="button" aria-label="Show password">◉</button>
+          </div>
+          <div id="registerConfirmWrap" class="input-group hidden confirm-password-group">
+            <div class="electric-border"></div><div class="electric-glow"></div>
+            <input id="authPassword2" type="password" autocomplete="new-password" placeholder=" " minlength="6">
+            <label for="authPassword2">Confirm password</label>
+            <button class="password-toggle confirm-toggle" id="togglePassword2" type="button" aria-label="Show confirm password">◉</button>
+          </div>
+          <div class="options">
+            <label class="checkbox" id="rememberLabel"><input type="checkbox" checked> <span>Keep me signed in</span></label>
+            <button id="forgotBtn" class="authforgot" type="button">Forgot password?</button>
+          </div>
+          <div id="authMsg" class="authmsg" role="alert"></div>
+          <button id="authSubmit" class="main-btn" type="submit">Log in</button>
+        </form>
+        <div class="switch-area" id="switchArea" role="button" tabindex="0" aria-label="Switch between login and create account">
+          <span id="switchText">New to Brick Manager?</span>
+          <button class="switch-circle" id="registerTab" type="button" aria-label="Create account">↗</button>
+          <button id="loginTab" type="button" class="hidden">Log in</button>
+        </div>
+        <div class="authfoot">Your business data is securely synced with your Firebase account.</div>
+      </div>
+    </div>
   </div>
 </div>
 <div id="appRoot" class="app hidden">
@@ -789,7 +1262,13 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     $("registerTab").classList.toggle("active", !login);
     $("registerConfirmWrap").classList.toggle("hidden", login);
     $("forgotBtn").classList.toggle("hidden", !login);
+    $("rememberLabel").classList.toggle("hidden", !login);
     $("authSubmit").textContent = login ? "Log in" : "Create account";
+    $("authTitle").textContent = login ? "Welcome Back" : "Create Account";
+    $("authSubtitle").textContent = login ? "Sign in to continue to Brick Manager" : "Create your secure Brick Manager account";
+    $("switchText").textContent = login ? "New to Brick Manager?" : "Already have an account?";
+    $("registerTab").setAttribute("aria-label", login ? "Create account" : "Log in");
+    $("registerTab").textContent = login ? "↗" : "↙";
     $("authPassword").setAttribute("autocomplete", login ? "current-password" : "new-password");
     showAuthMessage("");
   }
@@ -919,6 +1398,14 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
             $("accountStatus").textContent="Sign in to access your business data";
             $("accountAvatar").textContent="G";
             setAuthMode("login");
+            // Clear login fields after logout
+            $("authEmail").value = "";
+            $("authPassword").value = "";
+            $("authPassword2").value = "";
+            $("authEmail").type = "email";
+            $("authPassword").type = "password";
+            $("authPassword2").type = "password";
+            showAuthMessage("");
             setSyncUI("offline", "Log in to sync your business data across devices.");
           }
         });
@@ -1466,34 +1953,68 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       // No print.html, no file:// dependency, and no second app/file is needed.
       var printCss = `
         *{box-sizing:border-box}
-        html,body{margin:0;padding:0;background:#fff;color:#17212b;font-family:Arial,Helvetica,sans-serif}
-        body{padding:18px}
-        .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;margin:-18px -18px 18px;background:#f5f7fa;border-bottom:1px solid #dfe5eb}
+        html,body{margin:0;padding:0;background:#fff;color:#172033;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+        body{padding:0}
+        .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;margin:0 0 18px;background:#fff;border-bottom:1px solid #dfe5eb}
         .brand{font-weight:800;font-size:16px}
         .actions{display:flex;gap:8px;flex-wrap:wrap}
         button{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}
         .back{background:#e7edf3;color:#17212b}
-        .print{background:#17212b;color:#fff}
-        .document{max-width:1000px;margin:0 auto}
-        .document .box{border:1px solid #dfe5eb;border-radius:10px;padding:14px;margin-top:16px}
-        .document .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-        .document .row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #eee}
-        .document .row:last-child{border-bottom:0}
-        .document table{width:100%;border-collapse:collapse;margin-top:14px}
-        .document th,.document td{padding:7px;border:1px solid #ddd;text-align:left;font-size:12px}
-        .document th{background:#f3f7f7}
-        .document .total{font-size:18px;font-weight:800;text-align:right;margin-top:14px}
-        .document h1{font-size:26px;margin:0 0 4px}
-        .document .head{display:flex;justify-content:space-between;gap:16px}
-        .document .muted{color:#66727d}
-        @media(max-width:600px){body{padding:12px}.toolbar{margin:-12px -12px 12px}.document .grid{grid-template-columns:1fr}.document .head{display:block}.document th,.document td{padding:5px;font-size:10px}.document h1{font-size:22px}}
+        .print{background:#0f766e;color:#fff}
+        .document{max-width:1200px;margin:0 auto}
+        .bm-doc{width:100%;max-width:1200px;margin:0 auto;background:#fff;color:#172033}
+        .bm-doc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding:34px 22px 14px;border-bottom:2px solid #0f766e}
+        .bm-doc-brand h1{margin:0;color:#0f766e;font-size:36px;line-height:1.05;font-weight:800;letter-spacing:-1px}
+        .bm-doc-brand .bm-doc-sub{margin-top:12px;color:#2563eb !important;font-size:15px;letter-spacing:.6px;font-weight:800;text-transform:uppercase}
+        .bm-doc-meta{text-align:right;color:#64748b;font-size:14px;line-height:1.55;padding-top:4px}
+        .bm-doc-meta b{color:#64748b}
+        .bm-doc-card{margin:20px 0 0;border:1px solid #dbe3ea;border-radius:14px;background:#fff}
+        .bm-doc-summary{display:grid;grid-template-columns:1fr 1fr;gap:36px;padding:20px 18px}
+        .bm-doc-summary h3{margin:0 0 6px;font-size:20px;color:#172033;font-weight:800}
+        .bm-doc-summary p{margin:0;font-size:18px;color:#172033;line-height:1.5}
+        .bm-doc-table-wrap{margin-top:18px;overflow-x:auto}
+        .bm-doc-table{width:100%;border-collapse:collapse;table-layout:auto}
+        .bm-doc-table th,.bm-doc-table td{border:1px solid #d7dee5;padding:13px 12px;text-align:left;font-size:14px;color:#273244;white-space:nowrap}
+        .bm-doc-table th{background:#f1f5f5;color:#172033;font-weight:800}
+        .bm-doc-table td{background:#fff}
+        .bm-doc-totals{margin-top:18px;border:1px solid #dbe3ea;border-radius:14px;background:#fff;padding:18px}
+        .bm-doc-total-row{display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px solid #e5e7eb;font-size:18px;color:#273244}
+        .bm-doc-total-row:last-child{border-bottom:0}
+        .bm-doc-total-row strong{font-weight:800;color:#172033}
+        .bm-doc-total-row .paid{color:#047857}.bm-doc-total-row .due{color:#b91c1c}
+        .bm-doc-footer{padding:18px 0 24px;color:#94a3b8;text-align:center;font-size:11px}
+        .bm-invoice-party{display:grid;grid-template-columns:1fr 1fr;gap:36px;padding:22px 18px}
+        .bm-invoice-party .label{font-size:19px;font-weight:800;color:#172033;margin-bottom:7px}
+        .bm-invoice-party .value{font-size:18px;color:#172033}
+        .bm-invoice-total{text-align:right;font-size:25px;font-weight:800;color:#172033;padding:18px 0 0}
+        .bm-invoice-payment{margin-top:18px;border:1px solid #dbe3ea;border-radius:14px;padding:18px;background:#fff}
+        .bm-invoice-payment .row{display:flex;justify-content:space-between;gap:20px;padding:13px 0;border-bottom:1px solid #e5e7eb;font-size:18px;color:#172033}
+        .bm-invoice-payment .row:last-child{border-bottom:0}
+        .bm-invoice-payment .value{font-weight:800}.bm-invoice-payment .paid{color:#047857}.bm-invoice-payment .due{color:#b91c1c}
+        .bm-doc-footer{break-inside:avoid}
+        @media(max-width:700px){
+          body{padding:0}
+          .bm-doc-head{padding:24px 15px 13px;gap:12px}
+          .bm-doc-brand h1{font-size:29px}.bm-doc-brand .bm-doc-sub{font-size:12px;margin-top:9px;color:#2563eb !important;font-weight:800}
+          .bm-doc-meta{font-size:11px}
+          .bm-doc-summary,.bm-invoice-party{grid-template-columns:1fr;gap:14px;padding:16px 14px}
+          .bm-doc-summary h3,.bm-invoice-party .label{font-size:17px}
+          .bm-doc-summary p,.bm-invoice-party .value{font-size:14px}
+          .bm-doc-table th,.bm-doc-table td{font-size:11px;padding:9px 8px}
+          .bm-doc-totals,.bm-invoice-payment{padding:13px 14px}
+          .bm-doc-total-row,.bm-invoice-payment .row{font-size:14px}
+          .bm-invoice-total{font-size:20px;padding:15px 0 0}
+        }
         @media print{
+          .bm-doc-brand .bm-doc-sub{color:#2563eb !important;font-weight:800 !important;letter-spacing:.6px}
           @page{size:A4;margin:8mm}
           body{padding:0}
           .toolbar{display:none!important}
           .document{max-width:none}
+          .bm-doc-head{padding-top:0}
         }
       `;
+
       var printHtml = '<!doctype html><html><head><meta charset="utf-8">' +
         '<meta name="viewport" content="width=device-width,initial-scale=1">' +
         '<title>' + escapeHtml(title || "Brick Manager Document") + '</title>' +
@@ -1552,25 +2073,52 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
   function downloadInvoice(id) {
     var t = findTx(id);
     if (!t) { toast("Transaction not found"); return; }
+
     var total = txTotal(t);
     var paid = txPaidAmount(t);
     var due = txDueAmount(t);
     var typeName = t.type === "purchase" ? "PURCHASE INVOICE" : "SALES INVOICE";
     var partyLabel = t.type === "purchase" ? "Supplier" : "Customer";
     var phoneLabel = t.type === "purchase" ? "Supplier phone" : "Customer phone";
-    var body = '<div class="head"><div><h1>Brick Manager</h1><div class="muted">' + typeName + '</div></div>' +
-      '<div class="muted"><b>Date:</b> ' + escapeHtml(t.date) + '<br><b>Location:</b> ' + escapeHtml(t.location) + '</div></div>' +
-      '<div class="box"><div class="grid"><div><b>' + partyLabel + '</b><br>' + escapeHtml(t.buyer || "—") + '</div>' +
-      '<div><b>' + phoneLabel + '</b><br>' + escapeHtml(t.phone || "—") + '</div></div></div>' +
-      '<table><thead><tr><th>Description</th><th>Quantity</th><th>Rate / 1000</th><th>Amount</th></tr></thead><tbody>' +
-      '<tr><td>Bricks</td><td>' + qty(t.qty) + '</td><td>' + money(t.rate) + '</td><td>' + money((num(t.qty)*num(t.rate))/1000) + '</td></tr>' +
-      (num(t.extra) ? '<tr><td colspan="3">Extra cost</td><td>' + money(t.extra) + '</td></tr>' : '') +
-      '</tbody></table><div class="total">Payable / Total: ' + money(total) + '</div>' +
-      '<div class="box" style="margin-top:14px"><div class="row"><span>Payment status</span><b>' + escapeHtml(t.status || "Paid") + '</b></div>' +
-      '<div class="row"><span>Paid amount</span><b>' + money(paid) + '</b></div>' +
-      '<div class="row"><span>Due amount</span><b>' + money(due) + '</b></div></div>';
+
+    var body =
+      '<div class="bm-doc bm-invoice-doc">' +
+        '<div class="bm-doc-head">' +
+          '<div class="bm-doc-brand"><h1>Brick Manager</h1><div class="bm-doc-sub">' + typeName + '</div></div>' +
+          '<div class="bm-doc-meta"><div><b>Date:</b> ' + escapeHtml(t.date) + '</div><div><b>Location:</b> ' + escapeHtml(t.location) + '</div></div>' +
+        '</div>' +
+
+        '<div class="bm-doc-card">' +
+          '<div class="bm-invoice-party">' +
+            '<div><div class="label">' + partyLabel + '</div><div class="value">' + escapeHtml(t.buyer || "—") + '</div></div>' +
+            '<div><div class="label">' + phoneLabel + '</div><div class="value">' + escapeHtml(t.phone || "—") + '</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="bm-doc-table-wrap">' +
+          '<table class="bm-doc-table">' +
+            '<thead><tr><th>Description</th><th>Quantity</th><th>Rate / 1000</th><th>Amount</th></tr></thead>' +
+            '<tbody>' +
+              '<tr><td>Bricks</td><td>' + qty(t.qty) + '</td><td>' + money(t.rate) + '</td><td>' + money((num(t.qty) * num(t.rate)) / 1000) + '</td></tr>' +
+              (num(t.extra) ? '<tr><td colspan="3">Extra cost</td><td>' + money(t.extra) + '</td></tr>' : '') +
+            '</tbody>' +
+          '</table>' +
+        '</div>' +
+
+        '<div class="bm-invoice-total">Payable / Total: ' + money(total) + '</div>' +
+
+        '<div class="bm-invoice-payment">' +
+          '<div class="row"><span>Payment status</span><span class="value">' + escapeHtml(t.status || "Paid") + '</span></div>' +
+          '<div class="row"><span>Paid amount</span><span class="value paid">' + money(paid) + '</span></div>' +
+          '<div class="row"><span>Due amount</span><span class="value due">' + money(due) + '</span></div>' +
+        '</div>' +
+
+        '<div class="bm-doc-footer">Generated by Brick Manager</div>' +
+      '</div>';
+
     printDocument(typeName, body);
   }
+
 
   function downloadLocationStatement(location) {
     var old = document.getElementById("statementSelectOverlay");
@@ -1607,6 +2155,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       var totalValue = txs.reduce(function(a,t){ return a + txTotal(t); }, 0);
       var totalPaid = txs.reduce(function(a,t){ return a + (type === "sale" ? txPaidAmount(t) : txTotal(t)); }, 0);
       var totalDue = txs.reduce(function(a,t){ return a + (type === "sale" ? txDueAmount(t) : 0); }, 0);
+
       var rows = txs.map(function(t){
         var total = txTotal(t);
         var paid = type === "sale" ? txPaidAmount(t) : total;
@@ -1615,11 +2164,31 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
         return '<tr><td>'+escapeHtml(t.date)+'</td><td>'+qty(t.qty)+'</td><td>'+money(t.rate)+'</td><td>'+escapeHtml(party)+'</td><td>'+escapeHtml(t.phone||'—')+'</td><td>'+money(total)+'</td><td>'+escapeHtml(t.status || 'Paid')+'</td><td>'+money(paid)+'</td><td>'+money(due)+'</td></tr>';
       }).join('');
       if(!rows) rows='<tr><td colspan="9">No '+(type === "purchase" ? "purchase" : "sale")+' transactions for this location.</td></tr>';
+
       var title = type === "purchase" ? "PURCHASE STATEMENT" : "SALES STATEMENT";
-      var body = '<div class="head"><div><h1>Brick Manager</h1><div class="muted">'+title+'</div></div><div class="muted"><b>Location:</b> '+escapeHtml(location)+'<br><b>Generated:</b> '+escapeHtml(todayISO())+'</div></div>' +
-        '<div class="box"><div class="grid"><div><b>'+ (type === "purchase" ? "Purchases" : "Sales") +'</b><br>'+txs.length+' transactions · '+qty(totalQty)+' bricks · '+money(totalValue)+'</div><div><b>Payment</b><br>Paid: '+money(totalPaid)+'<br>Due: '+money(totalDue)+'</div></div></div>' +
-        '<table><thead><tr><th>Date</th><th>Qty</th><th>Rate/1000</th><th>'+ (type === "purchase" ? "Supplier" : "Buyer") +'</th><th>Phone</th><th>Payable</th><th>Status</th><th>Paid</th><th>Due</th></tr></thead><tbody>'+rows+'</tbody></table>' +
-        '<div class="box" style="margin-top:14px"><div class="row"><span>Total '+(type === "purchase" ? "purchase" : "sales")+' value</span><b>'+money(totalValue)+'</b></div><div class="row"><span>Total paid</span><b>'+money(totalPaid)+'</b></div><div class="row"><span>Total due</span><b>'+money(totalDue)+'</b></div></div>';
+      var body =
+        '<div class="bm-doc bm-statement-doc">' +
+          '<div class="bm-doc-head">' +
+            '<div class="bm-doc-brand"><h1>Brick Manager</h1><div class="bm-doc-sub">' + title + '</div></div>' +
+            '<div class="bm-doc-meta"><div><b>Location:</b> ' + escapeHtml(location) + '</div><div><b>Generated:</b> ' + escapeHtml(todayISO()) + '</div></div>' +
+          '</div>' +
+
+          '<div class="bm-doc-table-wrap">' +
+            '<table class="bm-doc-table">' +
+              '<thead><tr><th>Date</th><th>Qty</th><th>Rate/1000</th><th>'+(type === "purchase" ? "Supplier" : "Buyer")+'</th><th>Phone</th><th>Payable</th><th>Status</th><th>Paid</th><th>Due</th></tr></thead>' +
+              '<tbody>'+rows+'</tbody>' +
+            '</table>' +
+          '</div>' +
+
+          '<div class="bm-doc-totals">' +
+            '<div class="bm-doc-total-row"><span>Total '+(type === "purchase" ? "purchase" : "sales")+' value</span><strong>'+money(totalValue)+'</strong></div>' +
+            '<div class="bm-doc-total-row"><span>Total paid</span><strong class="paid">'+money(totalPaid)+'</strong></div>' +
+            '<div class="bm-doc-total-row"><span>Total due</span><strong class="due">'+money(totalDue)+'</strong></div>' +
+          '</div>' +
+
+          '<div class="bm-doc-footer">Statement generated by Brick Manager · '+escapeHtml(todayISO())+'</div>' +
+        '</div>';
+
       return { body: body, count: txs.length, totalValue: totalValue, totalPaid: totalPaid, totalDue: totalDue };
     }
 
@@ -1627,7 +2196,9 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
       var data = buildStatementBody(type);
       var content = document.getElementById("statementSelectionContent");
       if (!content) return;
-      content.innerHTML = '<div class="statement-actions" style="margin-bottom:12px">' +
+      content.innerHTML =
+        '<div class="statement-live-summary"><b>'+ (type === "purchase" ? "Purchase" : "Sale") +' transactions:</b> '+data.count+' &nbsp;·&nbsp; <b>Total:</b> '+money(data.totalValue)+' &nbsp;·&nbsp; <b>Paid:</b> '+money(data.totalPaid)+' &nbsp;·&nbsp; <b>Due:</b> '+money(data.totalDue)+'</div>' +
+        '<div class="statement-actions" style="margin-bottom:12px">' +
           '<button type="button" class="btn primary" id="statementPrintBtn">🖨️ Print '+(type === "purchase" ? "Purchase" : "Sale")+'</button>' +
           '<button type="button" class="btn ghost" id="statementPdfBtn">📄 Save PDF</button>' +
         '</div>' +
@@ -1649,6 +2220,7 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     document.getElementById("statementTypeSelect").addEventListener("change", function(){ renderSelection(this.value); });
     renderSelection("purchase");
   }
+
 
   /* ------------------------------------------------------------------
      Locations editor
@@ -1914,10 +2486,47 @@ body{background:radial-gradient(circle at 0 0,rgba(20,184,166,.08),transparent 2
     $("restoreFile").addEventListener("change", restoreJSON);
 
     $("authForm").addEventListener("submit", handleAuthSubmit);
-    $("loginTab").addEventListener("click", function(){ setAuthMode("login"); });
-    $("registerTab").addEventListener("click", function(){ setAuthMode("register"); });
+    $("loginTab").addEventListener("click", function(e){
+      e.preventDefault();
+      setAuthMode("login");
+    });
+    $("registerTab").addEventListener("click", function(e){
+      e.preventDefault();
+      var isLogin = $("loginTab").classList.contains("active");
+      setAuthMode(isLogin ? "register" : "login");
+    });
+    $("switchText").addEventListener("click", function(e){
+      e.preventDefault();
+      var isLogin = $("loginTab").classList.contains("active");
+      setAuthMode(isLogin ? "register" : "login");
+    });
+    $("switchArea").addEventListener("click", function(e){
+      if(e.target.closest && e.target.closest("button")) return;
+      e.preventDefault();
+      var isLogin = $("loginTab").classList.contains("active");
+      setAuthMode(isLogin ? "register" : "login");
+    });
+    $("switchArea").addEventListener("keydown", function(e){
+      if(e.key !== "Enter" && e.key !== " ") return;
+      if(e.target !== $("switchArea")) return;
+      e.preventDefault();
+      var isLogin = $("loginTab").classList.contains("active");
+      setAuthMode(isLogin ? "register" : "login");
+    });
     $("forgotBtn").addEventListener("click", forgotPassword);
-    $("togglePassword").addEventListener("click", function(){ var p=$("authPassword"); var show=p.type === "password"; p.type=show?"text":"password"; this.textContent=show?"Hide":"Show"; });
+    $("togglePassword").addEventListener("click", function(){
+      var p=$("authPassword");
+      var show=p.type === "password";
+      p.type=show?"text":"password";
+      this.textContent=show?"Hide":"Show";
+    });
+    $("togglePassword2").addEventListener("click", function(){
+      var p=$("authPassword2");
+      var show=p.type === "password";
+      p.type=show?"text":"password";
+      this.textContent=show?"◉":"◉";
+      this.setAttribute("aria-label", show ? "Hide confirm password" : "Show confirm password");
+    });
 
     $("newLocation").addEventListener("keydown", function (ev) {
       if (ev.key === "Enter") { ev.preventDefault(); addLocation(); }
